@@ -23,7 +23,7 @@ function doAjax(url, method, data, successFx, errorFx, extendOpts) {
                         msg = "Not Found";
                         break;
                     case 401:
-                        msg = "Invalid URL ";
+                        msg = "Authentication Error";
                         break;
                     case 403:
                         msg = "Access Denied";
