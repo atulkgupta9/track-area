@@ -10,7 +10,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/api/client/user/point/")
+@RequestMapping("/api/user/point/")
 public class PointController {
 
     @Autowired

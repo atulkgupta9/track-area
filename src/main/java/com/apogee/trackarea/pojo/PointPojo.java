@@ -1,11 +1,12 @@
 package com.apogee.trackarea.pojo;
 
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -15,6 +16,6 @@ public class PointPojo {
     private Integer id;
     private double x;
     private double y;
-    private LocalDateTime sentAt;
+    private LocalDateTime receivedAt = LocalDateTime.now();
 
 }

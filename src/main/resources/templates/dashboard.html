@@ -1,0 +1,42 @@
+<head>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-12" id="myFile">
+            <form id="import" class="form-group">
+                <input type="file">Import File
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-9">
+            <div id="myDiv">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                <label class="d-none" id="area-label">Estimated Area in Square meters</label>
+                <p class="font-weight-bold" id="area"></p>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript" th:src="@{/js/dashboard.js}" src="/js/dashboard.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.js}" src="/js/bootstrap.js"></script>
+<script type="text/javascript" th:src="@{/js/main.js}" src="/js/main.js"></script>
+
+</body>

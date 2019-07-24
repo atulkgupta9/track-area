@@ -9,6 +9,10 @@ public class SecurityUtil {
         return (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+    public static boolean checkIfLoggedIn(){
+        return SecurityContextHolder.getContext().getAuthentication() != null;
+    }
+
     public static Integer entityId(){
         return currentUser().getEntityId();
     }
