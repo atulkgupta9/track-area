@@ -1,8 +1,6 @@
 package com.apogee.trackarea.config;
 
 import com.apogee.trackarea.api.CustomUserDetailsService;
-import com.apogee.trackarea.exceptions.ApiException;
-import com.apogee.trackarea.exceptions.ApiStatus;
 import com.apogee.trackarea.pojo.CustomUserDetails;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,21 +44,20 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             Cookie[] cookies = req.getCookies();
-            if(cookies == null){
-                throw new ApiException(ApiStatus.AUTH_ERROR, "Cookies not found");
-            }
-            for(Cookie cookie : cookies){
-                if(cookie.getName().equals("Bearer")){
-                    String x = cookie.getValue();
-                    if(tokenProvider.validateToken(x)){
-                        String username = tokenProvider.getUsernameFromJWT(x);
-                        CustomUserDetails userDetails = api.loadUserByUsername(username);
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(cookies != null){
+                for(Cookie cookie : cookies){
+                    if(cookie.getName().equals("Bearer")){
+                        String x = cookie.getValue();
+                        if(tokenProvider.validateToken(x)){
+                            String username = tokenProvider.getUsernameFromJWT(x);
+                            CustomUserDetails userDetails = api.loadUserByUsername(username);
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
                     }
-                }
-            }
+                }            }
+
         }catch (Exception e){
             log.error("Could not set authentication in security Context", e);
         }
