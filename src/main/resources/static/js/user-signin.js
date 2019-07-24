@@ -1,7 +1,7 @@
 
 $(document).ready(function () {
     init();
-
+    let chamda = window.location.origin + "/";
     function init() {
         $("#signin-button").css("border-bottom", "3px solid black");
         $("#signin-form").css("display", "block");
@@ -26,5 +26,45 @@ $(document).ready(function () {
             $(this).css("display", "block");
         });
 
+    });
+
+    $("#admin-signin-form").on("submit", function(){
+        let $this = $(this);
+        let url = chamda + "api/auth/signin",
+            method = "POST",
+            body = serializeForm($this),
+            successFx = function(token){
+                console.log(token);
+                localStorage.setItem("token", token);
+                window.location.href = chamda + "ui/dashboard";
+            };
+        doAjax(url,method,body,successFx);
+        return false;
+    });
+
+    $("#user-signin-form").on("submit", function(){
+        let $this = $(this);
+        let url = chamda + "api/auth/signin",
+            method = "POST",
+            body = serializeForm($this),
+            successFx = function(token){
+                console.log(token);
+                localStorage.setItem("token", token);
+                window.location.href = chamda + "ui/dashboard";
+            };
+        doAjax(url,method,body,successFx);
+        return false;
+    });
+
+    $("#signup-form").on("submit", function(){
+        let $this = $(this);
+        let url = chamda + "api/auth/signup",
+            method = "POST",
+            body = serializeForm($this),
+            successFx = function(data){
+                alert("Successfully Registered !!");
+            };
+        doAjax(url,method,body,successFx);
+        return false;
     });
 });

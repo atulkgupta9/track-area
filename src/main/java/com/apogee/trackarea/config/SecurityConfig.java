@@ -2,6 +2,7 @@ package com.apogee.trackarea.config;
 
 
 import com.apogee.trackarea.api.CustomUserDetailsService;
+import com.apogee.trackarea.constant.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().authorizeRequests()
-                .antMatchers("/**","/css/**", "/js/**").permitAll()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authorizeRequests()
+                .antMatchers("/api/user/**").hasAuthority(Authorities.USER.toString())
+                .antMatchers("/ui/dashboard/","/ui/admin/user").hasAnyAuthority(Authorities.ADMIN.toString(), Authorities.USER.toString())
+                .and().authorizeRequests().antMatchers("/api/auth/**","/ui/signin", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -55,10 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources",
-                                   "/configuration/security","/ui/index", "/ui/user-signin",
-                                   "/swagger-ui.html", "/webjars/**");
+                "/configuration/security",
+                "/swagger-ui.html", "/webjars/**");
     }
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
