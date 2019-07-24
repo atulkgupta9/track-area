@@ -1,6 +1,8 @@
 package com.apogee.trackarea.config;
 
 import com.apogee.trackarea.api.CustomUserDetailsService;
+import com.apogee.trackarea.exceptions.ApiException;
+import com.apogee.trackarea.exceptions.ApiStatus;
 import com.apogee.trackarea.pojo.CustomUserDetails;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             Cookie[] cookies = req.getCookies();
+            if(cookies == null){
+                throw new ApiException(ApiStatus.AUTH_ERROR, "Cookies not found");
+            }
             for(Cookie cookie : cookies){
                 if(cookie.getName().equals("Bearer")){
                     String x = cookie.getValue();
