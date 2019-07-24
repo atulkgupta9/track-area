@@ -44,7 +44,8 @@ public class LoginController {
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setPath("/");
-        cookie.setMaxAge(1233);
+        //100 days
+        cookie.setMaxAge(60*60*24 * 100);
         response.addCookie(cookie);
 
         return res;
