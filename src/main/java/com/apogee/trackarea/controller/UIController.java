@@ -24,5 +24,9 @@ public class UIController {
     public String  adminUser() throws ApiException {
         return "user-signup.html";
     }
+    @RequestMapping(value = "/ui/testdb", method = RequestMethod.GET)
+    public String  testDb() throws ApiException {
+        return "testdb.html";
+    }
 
 }
