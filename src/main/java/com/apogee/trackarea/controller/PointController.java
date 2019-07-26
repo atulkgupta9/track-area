@@ -2,6 +2,7 @@ package com.apogee.trackarea.controller;
 
 import com.apogee.trackarea.algo.Point;
 import com.apogee.trackarea.api.PointApi;
+import com.apogee.trackarea.model.HullAreaData;
 import com.apogee.trackarea.pojo.PointPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +38,10 @@ public class PointController {
     @GetMapping("hull")
     public List<Point> getHull(){
         return api.getConvexHullPoints();
+    }
+
+    @GetMapping("hull/geo")
+    public HullAreaData getHull2(){
+        return api.getConvexHullPoints2();
     }
 }

@@ -38,7 +38,21 @@ $(document).ready(function () {
         var layout = {
             title: 'Points convered by device'
         };
-        Plotly.newPlot('myDiv', pos, layout, { showSendToCloud: false })
+        var d3 = Plotly.d3;
+        var img_jpg= d3.select('#jpg-export');
+
+        Plotly.newPlot('myDiv', pos, layout, { showSendToCloud: false }).then(
+            function(gd)
+            {
+                Plotly.toImage(gd,{height:300,width:300})
+                    .then(
+                        function(url)
+                        {
+                            img_jpg.attr("src", url);
+                            return Plotly.toImage(gd,{format:'jpeg',height:400,width:400});
+                        }
+                    )
+            });
     };
 
     const readUploadedFileAsText = (inputFile) => {
@@ -91,6 +105,18 @@ $(document).ready(function () {
         handleUpload($("input[type=file]").prop('files')[0]);
         return false;
     });
+
+    $("#gpgga-button").on('click', function (event) {
+        url = chamda + "api/user/point/hull/geo",
+            successFx = function (ramadhir) {
+                console.log(ramadhir);
+                let set2 = getHull(ramadhir['polygon'], ramadhir['polygon']);
+                console.log("set 2" , set2);
+                $("#area-2").text(ramadhir['area']);
+                $("#area-label-2").removeClass("d-none");
+            };
+        doAjax(url, "GET", undefined, successFx);
+    })
 
 // $("#import").on('submit', function(){
 // // var form = new FormData();
