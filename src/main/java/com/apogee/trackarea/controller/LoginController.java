@@ -98,4 +98,6 @@ public class LoginController {
 
         pointApi.savePoint(point);
     }
+
+
 }

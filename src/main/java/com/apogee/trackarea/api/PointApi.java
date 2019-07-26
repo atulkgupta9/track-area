@@ -4,7 +4,9 @@ import com.apogee.trackarea.algo.ComputePolygonArea;
 import com.apogee.trackarea.algo.ConvexHull;
 import com.apogee.trackarea.algo.Point;
 import com.apogee.trackarea.dao.PointDao;
+import com.apogee.trackarea.model.HullAreaData;
 import com.apogee.trackarea.pojo.PointPojo;
+import com.apogee.trackarea.util.GeoConvert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,4 +60,26 @@ public class PointApi {
         return dao.getPointsForDate(starting, ending);
     }
 
+    public HullAreaData getConvexHullPoints2() {
+        List<PointPojo> saved = getAllPoints();
+        List<Point> points = saved.stream().map( x-> {
+            try {
+                double s[]=GeoConvert.toUtm(convertToDegrees(x.getX()), convertToDegrees(x.getY()));
+                return new Point(s[0], s[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }).collect(Collectors.toList());
+        HullAreaData hullAreaData = new HullAreaData();
+        hullAreaData.setPolygon(points);
+        hullAreaData.setArea(ComputePolygonArea.computeArea(points));
+        return hullAreaData ;
+    }
+
+    private double convertToDegrees(double lat){
+        lat = lat*0.01;
+        return  (Math.floor(lat)*60+ ((lat-Math.floor(lat))*100) )/60;
+    }
 }
