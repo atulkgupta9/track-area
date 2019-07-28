@@ -1,9 +1,6 @@
 package com.apogee.trackarea.helpers.util;
 
-import com.apogee.trackarea.model.form.AdminForm;
-import com.apogee.trackarea.model.form.DeviceForm;
-import com.apogee.trackarea.model.form.LoginForm;
-import com.apogee.trackarea.model.form.UserForm;
+import com.apogee.trackarea.model.form.*;
 
 public class Data {
 
@@ -16,9 +13,17 @@ public class Data {
 
     public static UserForm getUserForm(String username, String password, String phone) {
         UserForm userForm = new UserForm();
-        userForm.setPhone(phone);
         userForm.setPassword(password);
         userForm.setUsername(username);
+
+        UserProfileForm userProfileForm = new UserProfileForm();
+        userProfileForm.setDistrict("Gwalior");
+        userProfileForm.setBlock("Datia");
+        userProfileForm.setVillage("Datia");
+        userProfileForm.setPhone(phone);
+        userProfileForm.setTractor("UP93-2959");
+        userProfileForm.setName("Atul Gupta");
+        userForm.setUserProfile(userProfileForm);
         return userForm;
     }
 

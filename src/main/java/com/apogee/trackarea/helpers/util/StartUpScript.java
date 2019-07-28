@@ -19,16 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class StartUpScript {
@@ -94,13 +89,27 @@ public class StartUpScript {
 
         userController.addDeviceLoggedInUser(deviceForm1);
         userController.addDeviceLoggedInUser(deviceForm2);
-        InputStream resource = new ClassPathResource("ggpaString").getInputStream();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
-            List<String> ggpas = reader.lines().collect(Collectors.toList());
-            for(String ggpa : ggpas){
-                userController.addGpggaPoint(ggpa);
-            }
-        }
+//        InputStream resource = new ClassPathResource("ggpaString").getInputStream();
+//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
+//            List<String> ggpas = reader.lines().collect(Collectors.toList());
+//            for(String ggpa : ggpas){
+//                userController.addGpggaPoint(ggpa);
+//            }
+//        }
+//        InputStream resource = new ClassPathResource("ggpaString").getInputStream();
+//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
+//            List<String> ggpas = reader.lines().collect(Collectors.toList());
+//            LocalDateTime startingTime = LocalDateTime.now().minusSeconds(30);
+//            for(int i=0; i<10; i++){
+//                userController.addGpggaPoint(ggpas.get(i), startingTime.plusSeconds(i));
+//            }
+//
+//            for(int i=10; i<20; i++){
+//                userController.addGpggaPoint(ggpas.get(i),startingTime.plusSeconds(i+15));
+//            }
+//        } catch (ApiException e) {
+//            throw e;
+//        }
 
     }
 }

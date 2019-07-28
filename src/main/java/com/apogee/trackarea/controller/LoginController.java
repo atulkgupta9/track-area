@@ -5,6 +5,7 @@ import com.apogee.trackarea.db.pojo.PointPojo;
 import com.apogee.trackarea.dtoapi.api.PointApi;
 import com.apogee.trackarea.dtoapi.dto.DeviceDto;
 import com.apogee.trackarea.dtoapi.dto.LoginDto;
+import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.helpers.algo.ComputePolygonArea;
 import com.apogee.trackarea.helpers.algo.ConvexHull;
 import com.apogee.trackarea.helpers.algo.Point;
@@ -86,17 +87,18 @@ public class LoginController {
 
 
     @PostMapping("test")
-    public void testStringAdd(@RequestBody String message){
+    public void testStringAdd(@RequestBody String message) throws ApiException {
 //        message = "$GPGGA,142202.00,2232.7794629,N,07255.6007712,E,4,25,0.5,54.7268,M,-57.702,M,01,0001*4D";
-        String split[] = message.split(",");
-        double x = Double.parseDouble(split[4]); //72.55E
-        double y = Double.parseDouble(split[2]); //22.32N
-
-        PointPojo point = new PointPojo();
-        point.setLat(x);
-        point.setLon(y);
-
-        pointApi.savePoint(point);
+//        String split[] = message.split(",");
+//        double x = Double.parseDouble(split[4]); //72.55E
+//        double y = Double.parseDouble(split[2]); //22.32N
+//
+//        PointPojo point = new PointPojo();
+//        point.setLat(x);
+//        point.setLon(y);
+//
+//        pointApi.saveEntity(point);
+        deviceDto.addGpggaPoint(message);
     }
 
 

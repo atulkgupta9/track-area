@@ -18,13 +18,11 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "user", indexes={ @Index(name = "user_username" , columnList = "username", unique = true)})
+@Table(name = "user_table")
 public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.TABLE, generator="user_seq_generator")
-    @SequenceGenerator(name = "user_seq_generator",  initialValue = 1001, allocationSize = 100)
-
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long userId;
 
     private String username;
@@ -36,15 +34,15 @@ public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
     private String pwdplain;
 
     @JsonIgnore
-    private String phone;
-
-    @JsonIgnore
     private boolean isActive=true;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Authorities authorities;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_profile")
+    private UserProfilePojo userProfile;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;

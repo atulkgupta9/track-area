@@ -3,6 +3,8 @@ package com.apogee.trackarea.dtoapi.api;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.apogee.trackarea.db.pojo.ReportPojo;
+import com.apogee.trackarea.db.pojo.UserProfilePojo;
 import com.apogee.trackarea.helpers.algo.Point;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -37,7 +39,7 @@ public class PdfApi {
 
 
     //Writes File to Aws and returnsUrl
-    public String writeFileToAwsS3(java.util.List<Point> points) throws IOException, DocumentException {
+    public String writeFileToAwsS3(java.util.List<Point>actual, java.util.List<Point> points, ReportPojo report, UserProfilePojo profile) throws IOException, DocumentException {
         AWSCredentials awsCredentials = new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
@@ -63,12 +65,14 @@ public class PdfApi {
         document.add(header);
         Map<String, String> tableCells = new LinkedHashMap<>();
         PdfPTable table = new PdfPTable(2);
-        tableCells.put("Report No. : ", "123444");
+        tableCells.put("Report No. : ", report.getReportId().toString());
         tableCells.put("Date : ", LocalDateTime.now().toString());
-        tableCells.put("District : ", "Gwalior");
-        tableCells.put("Village : ", "Datia");
-        tableCells.put("Name : ", "Raghuveer");
-        tableCells.put("Area (sq metres) : ", "193.34");
+        tableCells.put("Name : ", profile.getName());
+        tableCells.put("District : ", profile.getDistrict());
+        tableCells.put("Block : ", profile.getBlock());
+        tableCells.put("Village : ", profile.getVillage());
+        tableCells.put("Geo Co-ordinate :", report.getStartGeoCordinate());
+        tableCells.put("Area (sq metres) : ", report.getCalculatedArea().toString());
 
         for (String get : tableCells.keySet()) {
             PdfPCell cellOne = new PdfPCell(new Phrase(get));
@@ -80,7 +84,7 @@ public class PdfApi {
             table.addCell(cellOne);
             table.addCell(cellTwo);
         }
-        XYChart y = scatterChartApi.getChart(points);
+        XYChart y = scatterChartApi.getChart(actual,points);
         File imgFile = File.createTempFile("ramadhir", ".jpg");
         imgFile.deleteOnExit();
         BitmapEncoder.saveBitmap(y, imgFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);

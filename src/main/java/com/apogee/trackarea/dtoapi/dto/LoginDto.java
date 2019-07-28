@@ -1,6 +1,7 @@
 package com.apogee.trackarea.dtoapi.dto;
 
 import com.apogee.trackarea.config.JwtTokenProvider;
+import com.apogee.trackarea.db.pojo.UserProfilePojo;
 import com.apogee.trackarea.dtoapi.api.UserApi;
 import com.apogee.trackarea.helpers.constant.Authorities;
 import com.apogee.trackarea.helpers.constant.UserType;
@@ -11,6 +12,7 @@ import com.apogee.trackarea.model.form.LoginForm;
 import com.apogee.trackarea.model.form.UserForm;
 import com.apogee.trackarea.db.pojo.UserPojo;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,7 +56,10 @@ public class LoginDto {
         newUser.setUsername(form.getUsername());
         newUser.setPassword(passwordEncoder.encode(form.getPassword()));
         newUser.setAuthorities(Authorities.USER);
-        newUser.setPhone(form.getPhone());
+        UserProfilePojo userProfile = new UserProfilePojo();
+        BeanUtils.copyProperties(form.getUserProfile(), userProfile);
+        userProfile.setUser(newUser);
+        newUser.setUserProfile(userProfile);
         newUser.setPwdplain(form.getPassword());
         newUser.setUserType(UserType.USER);
         userApi.saveEntity(newUser);
