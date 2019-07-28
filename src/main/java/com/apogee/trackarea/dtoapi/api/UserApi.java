@@ -58,7 +58,7 @@ public class UserApi extends AbstractApi<UserPojo, Long, UserDao> implements Use
     @Transactional
     public void update(Long userId, UserPojo updated) throws ApiException {
         UserPojo existing = getCheckById(userId);
-        existing.setPhone(updated.getPhone());
+        existing.setUserProfile(updated.getUserProfile());
         //TODO set other properties
         existing.setDevices(updated.getDevices());
     }

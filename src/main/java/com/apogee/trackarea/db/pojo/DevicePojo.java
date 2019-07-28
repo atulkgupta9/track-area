@@ -13,11 +13,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "device")
+@Table(name = "device_table")
 public class DevicePojo extends AbstractVersionedPojo {
     @Id
-    @GeneratedValue(strategy =  GenerationType.TABLE, generator="device_seq_generator")
-    @SequenceGenerator(name = "device_seq_generator",  initialValue = 100001, allocationSize = 100)
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long deviceId;
 
     private String deviceImei;

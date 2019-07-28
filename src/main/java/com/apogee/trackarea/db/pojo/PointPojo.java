@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name="point")
+@Table(name="point_table")
 public class PointPojo extends AbstractVersionedPojo{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

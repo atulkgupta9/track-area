@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "report")
+@Table(name = "report_table")
 public class ReportPojo extends AbstractVersionedPojo{
     @Id
-    @GeneratedValue(strategy =  GenerationType.TABLE, generator="report_seq_generator")
-    @SequenceGenerator(name = "report_seq_generator",  initialValue = 100001, allocationSize = 100)
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long reportId;
 
     private String startGeoCordinate;
