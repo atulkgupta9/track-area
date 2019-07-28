@@ -1,7 +1,7 @@
 package com.apogee.trackarea.config;
 
 
-import com.apogee.trackarea.pojo.CustomUserDetails;
+import com.apogee.trackarea.db.pojo.UserPojo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,7 +23,7 @@ public class JwtTokenProvider {
     private int jwtExpiration;
 
     public String generateToken(Authentication authentication){
-        CustomUserDetails details = (CustomUserDetails) authentication.getPrincipal();
+        UserPojo details = (UserPojo) authentication.getPrincipal();
 
         Date now = new Date();
         Date expiry = new Date(now.getTime()+ jwtExpiration);

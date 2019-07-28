@@ -1,8 +1,8 @@
 package com.apogee.trackarea.config;
 
 
-import com.apogee.trackarea.api.CustomUserDetailsService;
-import com.apogee.trackarea.constant.Authorities;
+import com.apogee.trackarea.dtoapi.api.UserApi;
+import com.apogee.trackarea.helpers.constant.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private UserApi userApi;
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userApi).passwordEncoder(passwordEncoder());
     }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers("/api/user/**").hasAnyAuthority(Authorities.USER.toString(), Authorities.ADMIN.toString())
+                .antMatchers("/api/user/**").hasAnyAuthority(Authorities.USER.toString())
                 .antMatchers("/ui/dashboard/","/ui/admin/user").hasAnyAuthority(Authorities.ADMIN.toString(), Authorities.USER.toString())
                 .and().authorizeRequests().antMatchers("/api/auth/**","/ui/signin", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated();
@@ -55,11 +55,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
+
+
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources",
-                "/configuration/security",
-                "/swagger-ui.html", "/webjars/**");
+        web.ignoring().antMatchers(AUTH_WHITELIST);
     }
     @Bean
     public PasswordEncoder passwordEncoder(){

@@ -1,7 +1,7 @@
 package com.apogee.trackarea.config;
 
-import com.apogee.trackarea.api.CustomUserDetailsService;
-import com.apogee.trackarea.pojo.CustomUserDetails;
+import com.apogee.trackarea.dtoapi.api.UserApi;
+import com.apogee.trackarea.db.pojo.UserPojo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    private CustomUserDetailsService api;
+    private UserApi api;
 
     @Autowired
     private JwtTokenProvider tokenProvider;
@@ -37,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(req);
             if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)){
                 String username = tokenProvider.getUsernameFromJWT(jwt);
-                CustomUserDetails userDetails = api.loadUserByUsername(username);
+                UserPojo userDetails = api.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -50,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         String x = cookie.getValue();
                         if(tokenProvider.validateToken(x)){
                             String username = tokenProvider.getUsernameFromJWT(x);
-                            CustomUserDetails userDetails = api.loadUserByUsername(username);
+                            UserPojo userDetails = api.loadUserByUsername(username);
                             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                             SecurityContextHolder.getContext().setAuthentication(authentication);
