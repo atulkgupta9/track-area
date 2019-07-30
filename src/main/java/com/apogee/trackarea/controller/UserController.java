@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -39,7 +38,4 @@ public class UserController {
         deviceDto.addGpggaPoint(gpgga);
     }
 
-    public void addGpggaPoint(String s, LocalDateTime plusSeconds) throws ApiException {
-        deviceDto.addGpggaPoint(s,plusSeconds);
-    }
 }

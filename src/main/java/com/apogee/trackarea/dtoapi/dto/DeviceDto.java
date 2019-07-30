@@ -1,5 +1,6 @@
 package com.apogee.trackarea.dtoapi.dto;
 
+import com.apogee.trackarea.controller.LoginController;
 import com.apogee.trackarea.db.pojo.*;
 import com.apogee.trackarea.dtoapi.api.DeviceApi;
 import com.apogee.trackarea.dtoapi.api.PdfApi;
@@ -16,6 +17,7 @@ import com.apogee.trackarea.helpers.util.SecurityUtil;
 import com.apogee.trackarea.model.data.DeviceDetailsData;
 import com.apogee.trackarea.model.data.ReportDetailsData;
 import com.apogee.trackarea.model.form.DeviceForm;
+import com.apogee.trackarea.model.form.LoginForm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,7 @@ public class DeviceDto {
 
     //depends on our case  for the purpose of demo I think 10 seconds is enough
     //in real time it is 900 seconds
-    public final Double ACCEPTABLE = 10.0;
+    public final Double ACCEPTABLE = 120.0;
 
 
     @Autowired
@@ -53,16 +55,19 @@ public class DeviceDto {
 
 
     @Autowired
+    private LoginController loginController;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     public void runJob() throws DocumentException, ApiException, IOException {
         log.info("Starting Scheduler at : {}", LocalDateTime.now());
         LocalDateTime startTime = LocalDateTime.now();
         List<UserPojo> users = userApi.getAllEntities();
-        for(UserPojo user : users){
+        for (UserPojo user : users) {
             List<DevicePojo> devices = user.getDevices();
-            for(DevicePojo device : devices){
-                processPoints(user.getUserProfile() , device.getDeviceId());
+            for (DevicePojo device : devices) {
+                processPoints(user.getUserProfile(), device.getDeviceId());
             }
         }
         log.info("Time taken to complete the scheduler process : {}", Helper.timeDifference(startTime, LocalDateTime.now()));
@@ -72,9 +77,9 @@ public class DeviceDto {
     //Create corresponding reports for those points
     //create reports pdf store in aws
     //return results
-    
+
     public ReportDetailsData getAllReportsById(Long deviceId) throws ApiException {
-        if(!checkIfValidDevice(deviceId)){
+        if (!checkIfValidDevice(deviceId)) {
             throw new ApiException(ApiStatus.BAD_DATA, "This device does not belong to you");
         }
         ReportDetailsData reportDetailsData = new ReportDetailsData();
@@ -86,11 +91,11 @@ public class DeviceDto {
     public List<ReportPojo> processPoints(UserProfilePojo userProfile, Long deviceId) throws ApiException, IOException, DocumentException {
         List<PointPojo> points = getSortedPoints(deviceApi.getCheckById(deviceId).getPoints());
         LocalDateTime startTime = LocalDateTime.now();
-        log.info("Getting clusters for device {} " , deviceId );
+        log.info("Getting clusters for device {} ", deviceId);
         List<List<PointPojo>> allList = getClusters(points);
         log.info("Total clusters found were : {}, Time taken : {} ", allList.size(), Helper.timeDifference(startTime, LocalDateTime.now()));
         startTime = LocalDateTime.now();
-        List<ReportPojo> reports  = getReportsFromClusters(userProfile, allList,deviceId);
+        List<ReportPojo> reports = getReportsFromClusters(userProfile, allList, deviceId);
         log.info("Total reports generated are : {}, Time taken : {} ", reports.size(), Helper.timeDifference(startTime, LocalDateTime.now()));
         return reports;
     }
@@ -105,30 +110,24 @@ public class DeviceDto {
     @Transactional
     public DeviceDetailsData addDeviceLoggedInUser(DeviceForm deviceForm) throws ApiException {
         UserPojo user = SecurityUtil.currentUser();
-        List<DevicePojo> devices = user.getDevices();
         DevicePojo newDevice = new DevicePojo();
         newDevice.setDeviceImei(deviceForm.getDeviceImei());
-        newDevice.setUser(user);
-        devices.add(newDevice);
-        deviceApi.saveEntity(newDevice);
-        user.setDevices(devices);
-        DeviceDetailsData data = new DeviceDetailsData();
-        data.setDevices(user.getDevices());
-        return data;
+        userApi.update(user.getUserId(), newDevice);
 
+        DeviceDetailsData userDetailsData = new DeviceDetailsData();
+        userDetailsData.setDevices(user.getDevices());
+        return userDetailsData;
     }
 
     public void addGpggaPoint(String gpgga) throws ApiException {
+        LoginForm loginForm = new LoginForm();
+        loginForm.setUsername("user1@gmail.com");
+        loginForm.setPassword("password");
+        loginController.loginUser(loginForm);
+
         DevicePojo device = SecurityUtil.currentUser().getDevices().get(0);
         PointPojo point = validateAndPreprocessGpggaString(device.getDeviceId(), gpgga);
-        pointApi.saveEntity(point);
-    }
-    public void addGpggaPoint(String gpgga, LocalDateTime time) throws ApiException {
-        DevicePojo device = SecurityUtil.currentUser().getDevices().get(0);
-        PointPojo point = validateAndPreprocessGpggaString(device.getDeviceId(), gpgga);
-        point.setCreatedAt(time);
-        pointApi.saveEntity(point);
-        device.getPoints().add(point);
+        deviceApi.updateDevice(device.getDeviceId(), point);
     }
 
     private PointPojo validateAndPreprocessGpggaString(Long deviceId, String gpgga) throws ApiException {
@@ -139,7 +138,7 @@ public class DeviceDto {
             //72.92 E -> longitude
 
             String split[] = gpgga.split(",");
-            double lat  = Double.parseDouble(split[2]); //22.32N
+            double lat = Double.parseDouble(split[2]); //22.32N
             double lon = Double.parseDouble(split[4]); //72.55E
             lat = convertToDegrees(lat);
             lon = convertToDegrees(lon);
@@ -148,29 +147,29 @@ public class DeviceDto {
             point.setLat(lat);
             point.setLon(lon);
 
-            double[]ans =  GeoConvert.toUtm(lon,lat);
+            double[] ans = GeoConvert.toUtm(lon, lat);
             point.setUtmEasting(ans[0]);
             point.setUtmNorthing(ans[1]);
             point.setGpgga(gpgga);
-            point.setDevice(deviceApi.getById(deviceId));
+//            point.setDevice(deviceApi.getById(deviceId));
             return point;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("Error occured while validating and transforming GPGGA String : ", e);
             throw new ApiException(ApiStatus.BAD_DATA, "Could not add point " + e.getMessage());
         }
     }
 
-    private double convertToDegrees(double lat){
-        lat = lat*0.01;
-        return  (Math.floor(lat)*60+ ((lat-Math.floor(lat))*100) )/60;
+    private double convertToDegrees(double lat) {
+        lat = lat * 0.01;
+        return (Math.floor(lat) * 60 + ((lat - Math.floor(lat)) * 100)) / 60;
     }
 
     private boolean acceptable(PointPojo a, PointPojo b) {
         return (a.getCreatedAt().toEpochSecond(ZoneOffset.UTC) - b.getCreatedAt().toEpochSecond(ZoneOffset.UTC)) <= ACCEPTABLE;
     }
 
-    private boolean checkIfValidDevice(Long deviceId){
-        List<Long> devices =  SecurityUtil.currentUser().getDevices().stream().map(x->x.getDeviceId()).collect(Collectors.toList());
+    private boolean checkIfValidDevice(Long deviceId) {
+        List<Long> devices = SecurityUtil.currentUser().getDevices().stream().map(x -> x.getDeviceId()).collect(Collectors.toList());
         return devices.contains(deviceId);
     }
 
@@ -179,24 +178,23 @@ public class DeviceDto {
     }
 
     private boolean lastPointIsActive(PointPojo pointPojo) {
-        return (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)- pointPojo.getCreatedAt().toEpochSecond(ZoneOffset.UTC))<=ACCEPTABLE;
+        return (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) - pointPojo.getCreatedAt().toEpochSecond(ZoneOffset.UTC)) <= ACCEPTABLE;
     }
 
-    private List<PointPojo> getSortedPoints(List<PointPojo> points){
+    private List<PointPojo> getSortedPoints(List<PointPojo> points) {
         points.sort((o1, o2) -> {
-            if(o1.getCreatedAt().isBefore(o2.getCreatedAt())){
+            if (o1.getCreatedAt().isBefore(o2.getCreatedAt())) {
                 return -1;
-            }else if(o1.getCreatedAt().equals(o2.getCreatedAt())){
+            } else if (o1.getCreatedAt().equals(o2.getCreatedAt())) {
                 return 0;
-            }
-            else{
+            } else {
                 return 1;
             }
         });
         return points;
     }
 
-    private List<List<PointPojo>> getClusters(List<PointPojo> points){
+    private List<List<PointPojo>> getClusters(List<PointPojo> points) {
         List<List<PointPojo>> allList = new ArrayList<>();
         int n = points.size();
         int i = 0;
@@ -218,17 +216,17 @@ public class DeviceDto {
     private List<ReportPojo> getReportsFromClusters(UserProfilePojo userProfile, List<List<PointPojo>> allList, Long deviceId) throws IOException, DocumentException, ApiException {
         log.info("allList :  {} ", objectMapper.writeValueAsString(allList));
 
-        List<ReportPojo> reports  = new ArrayList<>();
+        List<ReportPojo> reports = new ArrayList<>();
 
-        if(!checkForValidList(allList)){
+        if (!checkForValidList(allList)) {
             return reports;
         }
-        for(List<PointPojo> list : allList){
-            if(list.isEmpty()){
+        for (List<PointPojo> list : allList) {
+            if (list.isEmpty()) {
                 continue;
             }
             int lsize = list.size();
-            if( lastPointIsActive(list.get(lsize-1))){
+            if (lastPointIsActive(list.get(lsize - 1))) {
                 continue;
             }
             //make point from pointpojo and get their hull
@@ -241,16 +239,16 @@ public class DeviceDto {
             ReportPojo report = new ReportPojo();
             report.setCalculatedArea(calculatedArea);
             report.setStartTime(list.get(0).getCreatedAt());
-            report.setEndTime(list.get(lsize-1).getCreatedAt());
+            report.setEndTime(list.get(lsize - 1).getCreatedAt());
             report.setActualPointsCaptured(lsize);
             report.setAreaPointsCaptured(hull.size());
-            report.setDevice(deviceApi.getById(deviceId));
+//            report.setDevice(deviceApi.getById(deviceId));
             report.setStartGeoCordinate(list.get(0).getLat() + " N, " + list.get(0).getLon() + " E");
-            report.setEndGeoCordinate(list.get(lsize-1).getLat() + " N, " + list.get(lsize-1).getLon() + " E");
+            report.setEndGeoCordinate(list.get(lsize - 1).getLat() + " N, " + list.get(lsize - 1).getLon() + " E");
             log.info("Writing file to Aws : {}", startTime);
             deviceApi.addReport(deviceId, report);
-            String awsS3Url = pdfApi.writeFileToAwsS3(tmp,hull, report, userProfile);
-            log.info("Time Taken : {}, Pdf Url : {} ",Helper.timeDifference(startTime,LocalDateTime.now()) ,awsS3Url );
+            String awsS3Url = pdfApi.writeFileToAwsS3(tmp, hull, report, userProfile);
+            log.info("Time Taken : {}, Pdf Url : {} ", Helper.timeDifference(startTime, LocalDateTime.now()), awsS3Url);
             deviceApi.updateReport(deviceId, report, awsS3Url);
 
             deviceApi.addReportAndDeletePoints(deviceId, report, list);

@@ -1,6 +1,7 @@
 package com.apogee.trackarea.dtoapi.api;
 
 import com.apogee.trackarea.db.dao.UserDao;
+import com.apogee.trackarea.db.pojo.DevicePojo;
 import com.apogee.trackarea.db.pojo.UserPojo;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.exceptions.ApiStatus;
@@ -62,4 +63,12 @@ public class UserApi extends AbstractApi<UserPojo, Long, UserDao> implements Use
         //TODO set other properties
         existing.setDevices(updated.getDevices());
     }
+
+    @Transactional
+    public void update(Long userId, DevicePojo updated) throws ApiException {
+        UserPojo existing = getCheckById(userId);
+        //TODO set other properties
+        existing.getDevices().add(updated);
+    }
+
 }

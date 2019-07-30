@@ -1,6 +1,5 @@
 package com.apogee.trackarea.db.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -26,9 +25,9 @@ public class PointPojo extends AbstractVersionedPojo{
 
     @Type(type = "text")
     private String gpgga;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "device")
-    private DevicePojo device;
+//
+//    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "device")
+//    private DevicePojo device;
 }

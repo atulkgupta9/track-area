@@ -1,7 +1,6 @@
 package com.apogee.trackarea.db.pojo;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,9 +32,9 @@ public class ReportPojo extends AbstractVersionedPojo{
 
     private Integer areaPointsCaptured;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "device")
-    private DevicePojo device;
+//    @JsonIgnore
+//    @ManyToOne
+//    @JoinColumn(name = "device")
+//    private DevicePojo device;
 
 }

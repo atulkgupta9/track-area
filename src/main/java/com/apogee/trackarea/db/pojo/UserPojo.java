@@ -41,14 +41,15 @@ public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
     private Authorities authorities;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_profile")
+    @JoinColumn(name="user_profile")
     private UserProfilePojo userProfile;
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
 //    @JoinColumn(name = "user", referencedColumnName = "userId")
     private List<DevicePojo> devices = new ArrayList<>();
 
