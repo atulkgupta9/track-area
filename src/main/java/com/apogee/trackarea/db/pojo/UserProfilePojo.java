@@ -1,6 +1,5 @@
 package com.apogee.trackarea.db.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,9 +21,9 @@ public class UserProfilePojo extends AbstractVersionedPojo{
     private String phone;
     private String address;
     private String name;
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user")
-    private UserPojo user;
+//    @JsonIgnore
+//    @OneToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "user")
+//    private UserPojo user;
 
 }

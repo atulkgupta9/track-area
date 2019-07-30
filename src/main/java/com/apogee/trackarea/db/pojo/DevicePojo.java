@@ -21,19 +21,16 @@ public class DevicePojo extends AbstractVersionedPojo {
 
     private String deviceImei;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user")
-    private UserPojo user;
-
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "device")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //        @JoinColumn(name = "device", referencedColumnName = "deviceId")
     @Fetch(FetchMode.SELECT)
+    @JoinColumn(name="device_id")
     private List<PointPojo> points = new ArrayList<>();
 
     @Fetch(FetchMode.SELECT)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "device")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="device_id")
     private List<ReportPojo> reports = new ArrayList<>();
 }

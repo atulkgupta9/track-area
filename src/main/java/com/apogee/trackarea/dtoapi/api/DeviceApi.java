@@ -41,4 +41,10 @@ public class DeviceApi extends AbstractApi<DevicePojo, Long, DeviceDao> {
         });
         device.setReports(list);
     }
+
+    @Transactional
+    public void updateDevice(Long deviceId, PointPojo point) throws ApiException {
+        DevicePojo device = getCheckById(deviceId);
+        device.getPoints().add(point);
+    }
 }

@@ -68,9 +68,6 @@ public class PdfApi {
         tableCells.put("Report No. : ", report.getReportId().toString());
         tableCells.put("Date : ", LocalDateTime.now().toString());
         tableCells.put("Name : ", profile.getName());
-        tableCells.put("District : ", profile.getDistrict());
-        tableCells.put("Block : ", profile.getBlock());
-        tableCells.put("Village : ", profile.getVillage());
         tableCells.put("Geo Co-ordinate :", report.getStartGeoCordinate());
         tableCells.put("Area (sq metres) : ", report.getCalculatedArea().toString());
 

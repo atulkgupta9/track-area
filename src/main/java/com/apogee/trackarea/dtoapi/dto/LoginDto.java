@@ -58,7 +58,7 @@ public class LoginDto {
         newUser.setAuthorities(Authorities.USER);
         UserProfilePojo userProfile = new UserProfilePojo();
         BeanUtils.copyProperties(form.getUserProfile(), userProfile);
-        userProfile.setUser(newUser);
+//        userProfile.setUser(newUser);
         newUser.setUserProfile(userProfile);
         newUser.setPwdplain(form.getPassword());
         newUser.setUserType(UserType.USER);

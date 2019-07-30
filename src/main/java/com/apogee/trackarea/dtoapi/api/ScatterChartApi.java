@@ -26,7 +26,7 @@ import java.util.List;
 public class ScatterChartApi {
 
     public XYChart getChart(List<Point>actual, List<Point>polygonPoints){
-        XYChart chart = new XYChartBuilder().width(500).height(300).build();
+        XYChart chart = new XYChartBuilder().width(400).height(200).build();
 
         // Customize Chart
 //        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
@@ -55,20 +55,20 @@ public class ScatterChartApi {
         series.setMarkerColor(Color.RED);
         series.setLineColor(new Color(127,58,153));
 
-//        xData = new LinkedList<>();
-//        yData = new LinkedList<>();
-//        for(Point point : actual){
-//            xData.add(point.x);
-//            yData.add(point.y);
-//        }
-//        if(actual  != null && !actual.isEmpty()){
-//            xData.add(actual.get(0).x);
-//            yData.add(actual.get(0).y);
-//
-//        }
-//        XYSeries series1 = chart.addSeries("ActualPoints", xData, yData);
-//        series1.setMarker(SeriesMarkers.DIAMOND);
-//        series1.setMarkerColor(Color.yellow);
+        xData = new LinkedList<>();
+        yData = new LinkedList<>();
+        for(Point point : actual){
+            xData.add(point.x);
+            yData.add(point.y);
+        }
+        if(actual  != null && !actual.isEmpty()){
+            xData.add(actual.get(0).x);
+            yData.add(actual.get(0).y);
+
+        }
+        XYSeries series1 = chart.addSeries("ActualPoints", xData, yData);
+        series1.setMarker(SeriesMarkers.DIAMOND);
+        series1.setMarkerColor(Color.GREEN);
         return chart;
 
     }
