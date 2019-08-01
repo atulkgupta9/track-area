@@ -100,7 +100,7 @@ public class DeviceDto {
         return reports;
     }
 
-    public DeviceDetailsData getDevicesLoggedInUser() {
+    public DeviceDetailsData    getDevicesLoggedInUser() {
         List<DevicePojo> devices = SecurityUtil.currentUser().getDevices();
         DeviceDetailsData data = new DeviceDetailsData();
         data.setDevices(devices);
