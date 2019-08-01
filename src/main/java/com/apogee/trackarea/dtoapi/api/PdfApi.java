@@ -81,14 +81,23 @@ public class PdfApi {
             table.addCell(cellOne);
             table.addCell(cellTwo);
         }
-        XYChart y = scatterChartApi.getChart(actual,points);
+        XYChart actual_points = scatterChartApi.getChart(actual,"actual points", "Points covered by device");
+        XYChart polygon_points = scatterChartApi.getChart(points,"area points", "Points used for area calculation");
+
         File imgFile = File.createTempFile("ramadhir", ".jpg");
         imgFile.deleteOnExit();
-        BitmapEncoder.saveBitmap(y, imgFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
+        BitmapEncoder.saveBitmap(actual_points, imgFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
+
+        File imgFile2 = File.createTempFile("ramadhir2", ".jpg");
+        imgFile2.deleteOnExit();
+        BitmapEncoder.saveBitmap(polygon_points, imgFile2.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
+
 //       VectorGraphicsEncoder.saveVectorGraphic(lon, imgFile.getAbsolutePath(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
         Image image = Image.getInstance(imgFile.getAbsolutePath());
+        Image image2 = Image.getInstance(imgFile2.getAbsolutePath());
         document.add(table);
         document.add(image);
+        document.add(image2);
         document.close();
         writer.close();
         s3.putObject(new PutObjectRequest(bucketName, key, file.getAbsoluteFile()));

@@ -25,18 +25,19 @@ import java.util.List;
 @Service
 public class ScatterChartApi {
 
-    public XYChart getChart(List<Point>actual, List<Point>polygonPoints){
-        XYChart chart = new XYChartBuilder().width(400).height(200).build();
+    public XYChart getChart(List<Point>polygonPoints, String seriesName, String title){
+        XYChart chart = new XYChartBuilder().width(450).height(300).build();
 
         // Customize Chart
 //        chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         chart.getStyler().setChartTitleVisible(true);
         chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideSW);
-        chart.getStyler().setMarkerSize(07);
+        chart.getStyler().setMarkerSize(04);
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
         chart.getStyler().setChartFontColor(Color.BLACK);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
-        chart.setTitle("Points Covered by device");
+        chart.getStyler().setLegendVisible(false);
+        chart.setTitle(title);
         // Series
         List<Double> xData = new LinkedList<Double>();
         List<Double> yData = new LinkedList<Double>();
@@ -50,25 +51,25 @@ public class ScatterChartApi {
             yData.add(polygonPoints.get(0).y);
 
         }
-        XYSeries series = chart.addSeries( "Area", xData, yData);
+        XYSeries series = chart.addSeries( seriesName, xData, yData);
         series.setMarker(SeriesMarkers.CIRCLE);
         series.setMarkerColor(Color.RED);
         series.setLineColor(new Color(127,58,153));
-
-        xData = new LinkedList<>();
-        yData = new LinkedList<>();
-        for(Point point : actual){
-            xData.add(point.x);
-            yData.add(point.y);
-        }
-        if(actual  != null && !actual.isEmpty()){
-            xData.add(actual.get(0).x);
-            yData.add(actual.get(0).y);
-
-        }
-        XYSeries series1 = chart.addSeries("ActualPoints", xData, yData);
-        series1.setMarker(SeriesMarkers.DIAMOND);
-        series1.setMarkerColor(Color.GREEN);
+//
+//        xData = new LinkedList<>();
+//        yData = new LinkedList<>();
+//        for(Point point : actual){
+//            xData.add(point.x);
+//            yData.add(point.y);
+//        }
+//        if(actual  != null && !actual.isEmpty()){
+//            xData.add(actual.get(0).x);
+//            yData.add(actual.get(0).y);
+//
+//        }
+//        XYSeries series1 = chart.addSeries("ActualPoints", xData, yData);
+//        series1.setMarker(SeriesMarkers.DIAMOND);
+//        series1.setMarkerColor(Color.GREEN);
         return chart;
 
     }

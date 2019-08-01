@@ -25,7 +25,7 @@ public class SchedulerConfig {
     @Autowired
     private DeviceDto deviceDto;
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 20000)
     public void generateReports() throws ApiException, IOException, DocumentException {
         deviceDto.runJob();
     }

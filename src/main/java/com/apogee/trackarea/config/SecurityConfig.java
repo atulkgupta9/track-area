@@ -2,7 +2,6 @@ package com.apogee.trackarea.config;
 
 
 import com.apogee.trackarea.dtoapi.api.UserApi;
-import com.apogee.trackarea.helpers.constant.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,11 +43,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and().authorizeRequests()
+//                .antMatchers("/api/user/**").hasAnyAuthority(Authorities.USER.toString())
+//                .antMatchers("/ui/dashboard/","/ui/admin/user").hasAnyAuthority(Authorities.ADMIN.toString(), Authorities.USER.toString())
+//                .and().authorizeRequests().antMatchers("/api/auth/**","/ui/signin", "/css/**", "/js/**").permitAll()
+//                .anyRequest().authenticated();
+//
+//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers("/api/user/**").hasAnyAuthority(Authorities.USER.toString())
-                .antMatchers("/ui/dashboard/","/ui/admin/user").hasAnyAuthority(Authorities.ADMIN.toString(), Authorities.USER.toString())
+                .antMatchers("/api/admin/**").permitAll()
+                .antMatchers("/api/user/**").permitAll()
+                .antMatchers("/ui/dashboard/","/ui/admin/user").permitAll()
                 .and().authorizeRequests().antMatchers("/api/auth/**","/ui/signin", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated();
 
