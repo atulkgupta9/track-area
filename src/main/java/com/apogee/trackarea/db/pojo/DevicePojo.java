@@ -32,5 +32,6 @@ public class DevicePojo extends AbstractVersionedPojo {
     @Fetch(FetchMode.SELECT)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="device_id")
+    @OrderBy("reportId desc")
     private List<ReportPojo> reports = new ArrayList<>();
 }

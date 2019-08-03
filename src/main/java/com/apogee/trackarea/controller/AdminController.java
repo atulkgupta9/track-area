@@ -4,6 +4,7 @@ package com.apogee.trackarea.controller;
 import com.apogee.trackarea.dtoapi.dto.LoginDto;
 import com.apogee.trackarea.dtoapi.dto.UserDto;
 import com.apogee.trackarea.exceptions.ApiException;
+import com.apogee.trackarea.model.data.SingleUserDetails;
 import com.apogee.trackarea.model.data.UserDetailsData;
 import com.apogee.trackarea.model.form.UserForm;
 import com.apogee.trackarea.model.form.UserUpdateForm;
@@ -30,8 +31,8 @@ public class AdminController {
     }
 
     @PostMapping("user")
-    public void createUser(@Valid @RequestBody UserForm form) throws ApiException {
-        loginDto.registerUser(form);
+    public SingleUserDetails createUser(@Valid @RequestBody UserForm form) throws ApiException {
+        return loginDto.registerUser(form);
     }
 
     @GetMapping("users")

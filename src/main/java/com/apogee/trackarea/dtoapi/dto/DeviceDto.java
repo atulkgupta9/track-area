@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +81,7 @@ public class DeviceDto {
     //return results
 
     public ReportDetailsData getAllReportsById(Long deviceId) throws ApiException {
+        login();
         if (!checkIfValidDevice(deviceId)) {
             throw new ApiException(ApiStatus.BAD_DATA, "This device does not belong to you");
         }
@@ -89,6 +92,7 @@ public class DeviceDto {
     }
 
     public List<ReportPojo> processPoints(UserProfilePojo userProfile, Long deviceId) throws ApiException, IOException, DocumentException {
+        login();
         List<PointPojo> points = getSortedPoints(deviceApi.getCheckById(deviceId).getPoints());
         LocalDateTime startTime = LocalDateTime.now();
         log.info("Getting clusters for device {} ", deviceId);
@@ -100,7 +104,8 @@ public class DeviceDto {
         return reports;
     }
 
-    public DeviceDetailsData    getDevicesLoggedInUser() {
+    public DeviceDetailsData getDevicesLoggedInUser() {
+        login();
         List<DevicePojo> devices = SecurityUtil.currentUser().getDevices();
         DeviceDetailsData data = new DeviceDetailsData();
         data.setDevices(devices);
@@ -109,6 +114,7 @@ public class DeviceDto {
 
     @Transactional
     public DeviceDetailsData addDeviceLoggedInUser(DeviceForm deviceForm) throws ApiException {
+        login();
         UserPojo user = SecurityUtil.currentUser();
         DevicePojo newDevice = new DevicePojo();
         newDevice.setDeviceImei(deviceForm.getDeviceImei());
@@ -120,14 +126,22 @@ public class DeviceDto {
     }
 
     public void addGpggaPoint(String gpgga) throws ApiException {
-        LoginForm loginForm = new LoginForm();
-        loginForm.setUsername("user1@gmail.com");
-        loginForm.setPassword("password");
-        loginController.loginUser(loginForm);
-
+        login();
         DevicePojo device = SecurityUtil.currentUser().getDevices().get(0);
         PointPojo point = validateAndPreprocessGpggaString(device.getDeviceId(), gpgga);
         deviceApi.updateDevice(device.getDeviceId(), point);
+    }
+
+    private void login(){
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (null != authentication && !("anonymousUser").equals(authentication.getName())){
+            return;
+        }
+
+        LoginForm loginForm = new LoginForm();
+        loginForm.setUsername("UA001");
+        loginForm.setPassword("password");
+        loginController.loginUser(loginForm);
     }
 
     private PointPojo validateAndPreprocessGpggaString(Long deviceId, String gpgga) throws ApiException {
@@ -243,11 +257,11 @@ public class DeviceDto {
             report.setActualPointsCaptured(lsize);
             report.setAreaPointsCaptured(hull.size());
 //            report.setDevice(deviceApi.getById(deviceId));
-            report.setStartGeoCordinate(list.get(0).getLat() + " N, " + list.get(0).getLon() + " E");
+            report.setStartGeoCordinate(String.format("%.6f, %.6f", list.get(0).getLat() , list.get(0).getLon()));
             report.setEndGeoCordinate(list.get(lsize - 1).getLat() + " N, " + list.get(lsize - 1).getLon() + " E");
             log.info("Writing file to Aws : {}", startTime);
             deviceApi.addReport(deviceId, report);
-            String awsS3Url = pdfApi.writeFileToAwsS3(tmp, hull, report, userProfile);
+            String awsS3Url = pdfApi.writeFileToAwsS3(deviceApi.getById(deviceId).getDeviceImei(), tmp, hull, report, userProfile);
             log.info("Time Taken : {}, Pdf Url : {} ", Helper.timeDifference(startTime, LocalDateTime.now()), awsS3Url);
             deviceApi.updateReport(deviceId, report, awsS3Url);
 

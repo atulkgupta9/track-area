@@ -22,7 +22,8 @@ import java.util.Map;
 
 @Component
 @Log4j2
-public class LogRequestFilter extends OncePerRequestFilter implements Ordered {
+public class
+LogRequestFilter extends OncePerRequestFilter implements Ordered {
 
     // put filter at the end of all other filters to make sure we are processing after all others
     private int order = Ordered.LOWEST_PRECEDENCE - 8;

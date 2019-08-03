@@ -10,10 +10,12 @@ import com.apogee.trackarea.dtoapi.api.UserApi;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.helpers.constant.Authorities;
 import com.apogee.trackarea.helpers.constant.UserType;
+import com.apogee.trackarea.model.data.SingleUserDetails;
 import com.apogee.trackarea.model.form.AdminForm;
 import com.apogee.trackarea.model.form.DeviceForm;
 import com.apogee.trackarea.model.form.LoginForm;
 import com.apogee.trackarea.model.form.UserForm;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +39,6 @@ public class StartUpScript {
     @Autowired
     private UserApi userApi;
 
-
     @Autowired
     private AdminController adminController;
 
@@ -49,6 +50,9 @@ public class StartUpScript {
 
     @Autowired
     private LoginController loginController;
+
+    @Autowired
+    private ObjectMapper mapper;
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -65,27 +69,30 @@ public class StartUpScript {
             newUser.setAuthorities(Authorities.SUPERADMIN);
             newUser.setUserType(UserType.SUPERADMIN);
             newUser.setPwdplain("password@123");
+            newUser.setPhone("948504843");
             userApi.saveEntity(newUser);
         }
 
-        AdminForm admin1 = Data.getAdminForm("atul.svnit@yahoo.com", "password");
-        AdminForm admin2 = Data.getAdminForm("nair.svnit@yahoo.com", "password");
+        AdminForm admin1 = Data.getAdminForm( "password", "981949404");
+        AdminForm admin2 = Data.getAdminForm( "password", "439838344");
 
-        superadminController.createAdmin(admin1);
-        superadminController.createAdmin(admin2);
+        SingleUserDetails adminDetail1 = superadminController.createAdmin(admin1);
+        SingleUserDetails adminDetail2 = superadminController.createAdmin(admin2);
 
-        UserForm user1 = Data.getUserForm("user1@gmail.com", "password", "9712388888");
-        UserForm user2 = Data.getUserForm("user2@gmail.com", "password", "9712388888");
+        UserForm user1 = Data.getUserForm("Ganesh Gaitonde", "password", "9712388888");
+        UserForm user2 = Data.getUserForm("Ramadhir Singh", "password", "9712388880");
 
-        adminController.createUser(user1);
-        adminController.createUser(user2);
-
-
-        LoginForm loginForm = Data.getLoginForm("user1@gmail.com", "password");
+        SingleUserDetails userDetails1 = adminController.createUser(user1);
+        SingleUserDetails userDetails2 = adminController.createUser(user2);
+        System.out.println(mapper.writeValueAsString(adminDetail1));
+        System.out.println(mapper.writeValueAsString(adminDetail2));
+        System.out.println(mapper.writeValueAsString(userDetails1));
+        System.out.println(mapper.writeValueAsString(userDetails2));
+        LoginForm loginForm = Data.getLoginForm("UA001", "password");
         loginController.loginUser(loginForm);
 
-        DeviceForm deviceForm1 = Data.getDeviceForm("IMEI-1");
-        DeviceForm deviceForm2 = Data.getDeviceForm("IMEI-2");
+        DeviceForm deviceForm1 = Data.getDeviceForm("A2658");
+        DeviceForm deviceForm2 = Data.getDeviceForm("B2658");
 
         userController.addDeviceLoggedInUser(deviceForm1);
         userController.addDeviceLoggedInUser(deviceForm2);
