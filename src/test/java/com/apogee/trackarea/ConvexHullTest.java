@@ -21,20 +21,17 @@ package com.apogee.trackarea;
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.apogee.trackarea.helpers.algo.ConvexHull;
+import com.apogee.trackarea.helpers.algo.Point;
+import org.junit.Test;
+
+import java.util.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.apogee.trackarea.algo.ConvexHull;
-import com.apogee.trackarea.algo.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import org.junit.Test;
 
-
-public final class ConvexHullTest {
+public final class ConvexHullTest  {
 
     /*---- Fixed test vectors ----*/
 

@@ -51,5 +51,9 @@ $(document).ready(function () {
   doAjax(url, method, undefined, successFx);
   console.log("set ", set1);
   console.log("set 2 ", set2);
+    $("#myFile").change(function(e){
+        var fileName = e.target.files[0].name;
+        alert('The file "' + fileName +  '" has been selected.');
+    });
 
 });

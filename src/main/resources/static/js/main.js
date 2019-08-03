@@ -23,7 +23,7 @@ function doAjax(url, method, data, successFx, errorFx, extendOpts) {
                         msg = "Not Found";
                         break;
                     case 401:
-                        msg = "Invalid URL ";
+                        msg = "Authentication Error";
                         break;
                     case 403:
                         msg = "Access Denied";
@@ -45,4 +45,19 @@ function doAjax(url, method, data, successFx, errorFx, extendOpts) {
         ...extendOpts
     }
     $.ajax(updatedOpts);
+}
+
+function serializeForm(formObj) {
+    let returnObj = {},
+        formArray = formObj.serializeArray();
+    for (let obj of formArray) {
+        if (obj['value'] && obj['value'] !== "null" && obj['value'] !== 'undefined') {
+            returnObj[obj['name']] = obj['value'];
+        }
+    }
+    return returnObj;
+}
+
+function showError(msg) {
+    alert(msg);
 }
