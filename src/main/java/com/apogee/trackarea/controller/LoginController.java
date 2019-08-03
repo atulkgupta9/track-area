@@ -9,8 +9,10 @@ import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.helpers.algo.ComputePolygonArea;
 import com.apogee.trackarea.helpers.algo.ConvexHull;
 import com.apogee.trackarea.helpers.algo.Point;
+import com.apogee.trackarea.helpers.util.SecurityUtil;
 import com.apogee.trackarea.model.data.HullAreaData;
 import com.apogee.trackarea.model.data.JwtAuthenticationResponse;
+import com.apogee.trackarea.model.data.SingleUserDetails;
 import com.apogee.trackarea.model.form.LoginForm;
 import com.apogee.trackarea.model.form.PointsForm;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +52,10 @@ public class LoginController {
         //100 days
         cookie.setMaxAge(60*60*24 * 100);
         response.addCookie(cookie);
-
+        SingleUserDetails data = new SingleUserDetails();
+        data.setUsername(SecurityUtil.currentUser().getUsername());
+        data.setUserType(SecurityUtil.userType());
+        res.setUser(data);
         return res;
     }
 

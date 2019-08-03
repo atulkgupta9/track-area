@@ -39,7 +39,7 @@ public class PdfApi {
 
 
     //Writes File to Aws and returnsUrl
-    public String writeFileToAwsS3(java.util.List<Point>actual, java.util.List<Point> points, ReportPojo report, UserProfilePojo profile) throws IOException, DocumentException {
+    public String writeFileToAwsS3(String deviceNo, java.util.List<Point>actual, java.util.List<Point> points, ReportPojo report, UserProfilePojo profile) throws IOException, DocumentException {
         AWSCredentials awsCredentials = new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
@@ -53,7 +53,7 @@ public class PdfApi {
         };
         AmazonS3Client s3 = new AmazonS3Client(awsCredentials);
         String key = UUID.randomUUID().toString().substring(0,8);
-        File file = File.createTempFile("AtulGupta-00-", ".pdf");
+        File file = File.createTempFile("temporary", ".pdf");
         file.deleteOnExit();
 
         Document document = new Document();
@@ -63,13 +63,19 @@ public class PdfApi {
         Image header = Image.getInstance("https://www.mpdage.org/LatestContent/img/img-mp-logo-en.gif");
         header.scaleToFit(500, 400);
         document.add(header);
+        document.add( Chunk.NEWLINE );
+        document.add( Chunk.NEWLINE );
         Map<String, String> tableCells = new LinkedHashMap<>();
         PdfPTable table = new PdfPTable(2);
+        table.setSpacingBefore(10);
+//        table.setSpacingAfter(1);
+
         tableCells.put("Report No. : ", report.getReportId().toString());
         tableCells.put("Date : ", LocalDateTime.now().toString());
+        tableCells.put("Device No. :", deviceNo);
         tableCells.put("Name : ", profile.getName());
-        tableCells.put("Geo Co-ordinate :", report.getStartGeoCordinate());
-        tableCells.put("Area (sq metres) : ", report.getCalculatedArea().toString());
+        tableCells.put("Location :", report.getStartGeoCordinate());
+        tableCells.put("Estimated Area : ", String.format("%.3f sqm", report.getCalculatedArea()));
 
         for (String get : tableCells.keySet()) {
             PdfPCell cellOne = new PdfPCell(new Phrase(get));

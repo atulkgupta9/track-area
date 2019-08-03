@@ -6,6 +6,7 @@ import com.apogee.trackarea.dtoapi.dto.LoginDto;
 import com.apogee.trackarea.dtoapi.dto.UserDto;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.model.data.AdminDetailsData;
+import com.apogee.trackarea.model.data.SingleUserDetails;
 import com.apogee.trackarea.model.form.AdminForm;
 import com.apogee.trackarea.model.form.AdminUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,9 @@ public class SuperadminController {
         return userDto.getAdminDetails(adminId);
     }
 
-    @PutMapping("admin")
-    public void createAdmin(@Valid @RequestBody AdminForm adminForm) throws ApiException {
-        loginDto.createAdmin(adminForm);
+    @PostMapping("admin")
+    public SingleUserDetails createAdmin(@Valid @RequestBody AdminForm adminForm) throws ApiException {
+        return loginDto.createAdmin(adminForm);
     }
     //update admins
     @PutMapping("admin/{adminId}")

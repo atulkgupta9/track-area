@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,10 +26,16 @@ public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long userId;
 
+    @NotNull
+    @Column(unique = true)
     private String username;
 
     @JsonIgnore
     private String password;
+
+    @NotNull
+    @Column(unique = true)
+    private String phone;
 
     @JsonIgnore
     private String pwdplain;
@@ -59,22 +66,25 @@ public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
         //        return authorities.stream().map(lat->new SimpleGrantedAuthority(lat)).collect(Collectors.toList());
         return Arrays.asList(new SimpleGrantedAuthority(this.authorities.toString()));
     }
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return isActive;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return isActive;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return isActive;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return isActive;

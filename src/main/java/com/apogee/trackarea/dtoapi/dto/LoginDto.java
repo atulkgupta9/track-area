@@ -1,12 +1,14 @@
 package com.apogee.trackarea.dtoapi.dto;
 
 import com.apogee.trackarea.config.JwtTokenProvider;
+import com.apogee.trackarea.db.pojo.DevicePojo;
 import com.apogee.trackarea.db.pojo.UserProfilePojo;
 import com.apogee.trackarea.dtoapi.api.UserApi;
 import com.apogee.trackarea.helpers.constant.Authorities;
 import com.apogee.trackarea.helpers.constant.UserType;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.model.data.JwtAuthenticationResponse;
+import com.apogee.trackarea.model.data.SingleUserDetails;
 import com.apogee.trackarea.model.form.AdminForm;
 import com.apogee.trackarea.model.form.LoginForm;
 import com.apogee.trackarea.model.form.UserForm;
@@ -51,9 +53,8 @@ public class LoginDto {
     }
 
 
-    public void registerUser(UserForm form) throws ApiException {
+    public SingleUserDetails registerUser(UserForm form) throws ApiException {
         UserPojo newUser = new UserPojo();
-        newUser.setUsername(form.getUsername());
         newUser.setPassword(passwordEncoder.encode(form.getPassword()));
         newUser.setAuthorities(Authorities.USER);
         UserProfilePojo userProfile = new UserProfilePojo();
@@ -62,16 +63,29 @@ public class LoginDto {
         newUser.setUserProfile(userProfile);
         newUser.setPwdplain(form.getPassword());
         newUser.setUserType(UserType.USER);
+        newUser.setPhone(form.getPhone());
+        DevicePojo device = new DevicePojo();
+        device.setDeviceImei(form.getDevice());
+        newUser.getDevices().add(device);
         userApi.saveEntity(newUser);
+        SingleUserDetails details = new SingleUserDetails();
+        details.setUsername(newUser.getUsername());
+        details.setUserType(UserType.USER);
+        return details;
     }
 
-    public void createAdmin(AdminForm adminForm) throws ApiException {
+    public SingleUserDetails createAdmin(AdminForm adminForm) throws ApiException {
         UserPojo newAdmin = new UserPojo();
-        newAdmin.setUsername(adminForm.getUsername());
         newAdmin.setAuthorities(Authorities.ADMIN);
         newAdmin.setPwdplain(adminForm.getPassword());
+        newAdmin.setPhone(adminForm.getPhone());
         newAdmin.setPassword(passwordEncoder.encode(adminForm.getPassword()));
         newAdmin.setUserType(UserType.ADMIN);
         userApi.saveEntity(newAdmin);
+
+        SingleUserDetails details = new SingleUserDetails();
+        details.setUsername(newAdmin.getUsername());
+        details.setUserType(UserType.ADMIN);
+        return details;
     }
 }
