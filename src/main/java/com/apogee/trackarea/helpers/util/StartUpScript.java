@@ -11,10 +11,7 @@ import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.helpers.constant.Authorities;
 import com.apogee.trackarea.helpers.constant.UserType;
 import com.apogee.trackarea.model.data.SingleUserDetails;
-import com.apogee.trackarea.model.form.AdminForm;
-import com.apogee.trackarea.model.form.DeviceForm;
-import com.apogee.trackarea.model.form.LoginForm;
-import com.apogee.trackarea.model.form.UserForm;
+import com.apogee.trackarea.model.form.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +91,14 @@ public class StartUpScript {
         DeviceForm deviceForm1 = Data.getDeviceForm("A2658");
         DeviceForm deviceForm2 = Data.getDeviceForm("B2658");
 
+        userController.addDeviceLoggedInUser(deviceForm1);
+        userController.addDeviceLoggedInUser(deviceForm2);
+
+        loginForm = Data.getLoginForm("UA002", "password");
+        loginController.loginUser(loginForm);
+
+        deviceForm1.setDeviceImei("j444");
+        deviceForm2.setDeviceImei("o55");
         userController.addDeviceLoggedInUser(deviceForm1);
         userController.addDeviceLoggedInUser(deviceForm2);
 //        InputStream resource = new ClassPathResource("ggpaString").getInputStream();

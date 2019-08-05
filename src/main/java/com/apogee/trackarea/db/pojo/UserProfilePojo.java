@@ -18,7 +18,6 @@ public class UserProfilePojo extends AbstractVersionedPojo{
     private String block;
     private String village;
     private String tractor;
-    private String phone;
     private String address;
     private String name;
 //    @JsonIgnore
