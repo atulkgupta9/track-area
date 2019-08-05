@@ -67,8 +67,8 @@ public class PdfApi {
         document.add( Chunk.NEWLINE );
         Map<String, String> tableCells = new LinkedHashMap<>();
         PdfPTable table = new PdfPTable(2);
-        table.setSpacingBefore(10);
-//        table.setSpacingAfter(1);
+        table.setSpacingBefore(30);
+        table.setSpacingAfter(30);
 
         tableCells.put("Report No. : ", report.getReportId().toString());
         tableCells.put("Date : ", LocalDateTime.now().toString());
@@ -87,22 +87,22 @@ public class PdfApi {
             table.addCell(cellOne);
             table.addCell(cellTwo);
         }
-        XYChart actual_points = scatterChartApi.getChart(actual,"actual points", "Points covered by device");
+//        XYChart actual_points = scatterChartApi.getChart(actual,"actual points", "Points covered by device");
         XYChart polygon_points = scatterChartApi.getChart(points,"area points", "Points used for area calculation");
 
-        File imgFile = File.createTempFile("ramadhir", ".jpg");
-        imgFile.deleteOnExit();
-        BitmapEncoder.saveBitmap(actual_points, imgFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
+//        File imgFile = File.createTempFile("ramadhir", ".jpg");
+//        imgFile.deleteOnExit();
+//        BitmapEncoder.saveBitmap(actual_points, imgFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
 
         File imgFile2 = File.createTempFile("ramadhir2", ".jpg");
         imgFile2.deleteOnExit();
         BitmapEncoder.saveBitmap(polygon_points, imgFile2.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
 
 //       VectorGraphicsEncoder.saveVectorGraphic(lon, imgFile.getAbsolutePath(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
-        Image image = Image.getInstance(imgFile.getAbsolutePath());
+//        Image image = Image.getInstance(imgFile.getAbsolutePath());
         Image image2 = Image.getInstance(imgFile2.getAbsolutePath());
         document.add(table);
-        document.add(image);
+//        document.add(image);
         document.add(image2);
         document.close();
         writer.close();

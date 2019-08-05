@@ -3,10 +3,12 @@ package com.apogee.trackarea.dtoapi.api;
 import com.apogee.trackarea.db.dao.UserDao;
 import com.apogee.trackarea.db.pojo.DevicePojo;
 import com.apogee.trackarea.db.pojo.UserPojo;
+import com.apogee.trackarea.db.pojo.UserProfilePojo;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.exceptions.ApiStatus;
 import com.apogee.trackarea.helpers.constant.UserType;
 import com.apogee.trackarea.helpers.util.Helper;
+import com.apogee.trackarea.model.form.UserSearchForm;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -68,11 +70,12 @@ public class UserApi extends AbstractApi<UserPojo, Long, UserDao> implements Use
     }
 
     @Transactional
-    public void update(Long userId, UserPojo updated) throws ApiException {
+    public void update(Long userId, DevicePojo device, UserProfilePojo userProfile) throws ApiException {
         UserPojo existing = getCheckById(userId);
-        existing.setUserProfile(updated.getUserProfile());
+        existing.setUserProfile(userProfile);
         //TODO set other properties
-        existing.setDevices(updated.getDevices());
+        if(device != null)
+            existing.getDevices().add(device);
     }
 
     @Transactional
@@ -92,4 +95,8 @@ public class UserApi extends AbstractApi<UserPojo, Long, UserDao> implements Use
     }
 
 
+    @Transactional(readOnly = true)
+    public List<UserPojo> searchUser(UserSearchForm form) {
+        return dao.getByForm(UserType.USER, form.getDeviceNo(), form.getUsername());
+    }
 }

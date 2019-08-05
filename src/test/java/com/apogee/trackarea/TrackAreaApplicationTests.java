@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ComponentScan(excludeFilters = @ComponentScan.Filter(
         type = FilterType.ASSIGNABLE_TYPE,
         value = {SchedulerConfig.class}))
+
+
 public class TrackAreaApplicationTests {
     @Test
     public void init() {

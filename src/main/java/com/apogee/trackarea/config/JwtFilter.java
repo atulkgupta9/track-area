@@ -42,21 +42,22 @@ public class JwtFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
-            Cookie[] cookies = req.getCookies();
-            if(cookies != null){
-                for(Cookie cookie : cookies){
-                    if(cookie.getName().equals("Bearer")){
-                        String x = cookie.getValue();
-                        if(tokenProvider.validateToken(x)){
-                            String username = tokenProvider.getUsernameFromJWT(x);
-                            UserPojo userDetails = api.loadUserByUsername(username);
-                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                        }
-                    }
-                }            }
+//
+//            Cookie[] cookies = req.getCookies();
+//            if(cookies != null){
+//                for(Cookie cookie : cookies){
+//                    if(cookie.getName().equals("Bearer")){
+//                        String x = cookie.getValue();
+//                        if(tokenProvider.validateToken(x)){
+//                            String username = tokenProvider.getUsernameFromJWT(x);
+//                            UserPojo userDetails = api.loadUserByUsername(username);
+//                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+//                            SecurityContextHolder.getContext().setAuthentication(authentication);
+//                        }
+//                    }
+//                }
+//            }
 
         }catch (Exception e){
             log.error("Could not set authentication in security Context", e);

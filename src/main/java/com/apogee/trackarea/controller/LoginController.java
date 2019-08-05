@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -45,13 +44,13 @@ public class LoginController {
     @PostMapping("signin")
     public JwtAuthenticationResponse loginUser(@Valid @RequestBody LoginForm form, HttpServletRequest request, HttpServletResponse response) {
         JwtAuthenticationResponse res = loginDto.loginUser(form);
-        Cookie cookie = new Cookie("Bearer", res.getAccessToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(request.isSecure());
-        cookie.setPath("/");
-        //100 days
-        cookie.setMaxAge(60*60*24 * 100);
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("Bearer", res.getAccessToken());
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(request.isSecure());
+//        cookie.setPath("/");
+//        //100 days
+//        cookie.setMaxAge(60*60*24 * 100);
+//        response.addCookie(cookie);
         SingleUserDetails data = new SingleUserDetails();
         data.setUsername(SecurityUtil.currentUser().getUsername());
         data.setUserType(SecurityUtil.userType());
