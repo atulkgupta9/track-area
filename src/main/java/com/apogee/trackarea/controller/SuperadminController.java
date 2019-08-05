@@ -8,7 +8,6 @@ import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.model.data.AdminDetailsData;
 import com.apogee.trackarea.model.data.SingleUserDetails;
 import com.apogee.trackarea.model.form.AdminForm;
-import com.apogee.trackarea.model.form.AdminUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,10 +40,10 @@ public class SuperadminController {
         return loginDto.createAdmin(adminForm);
     }
     //update admins
-    @PutMapping("admin/{adminId}")
-    public void updateAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateForm form) throws ApiException {
-        userDto.updateAdminDetails(id,form);
-    }
+//    @PutMapping("admin/{adminId}")
+//    public void updateAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateForm form) throws ApiException {
+//        userDto.updateAdminDetails(id,form);
+//    }
 
 
 }
