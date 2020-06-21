@@ -19,32 +19,30 @@ public class DeviceApi extends AbstractApi<DevicePojo, Long, DeviceDao> {
     private PointApi pointApi;
 
     @Transactional(rollbackFor = ApiException.class)
-    public void addReportAndDeletePoints(Long deviceId, ReportPojo report, List<PointPojo> points) throws ApiException {
-//        DevicePojo device = getCheckById(deviceId);
-//        device.getReports().add(report);
+    public void addReportAndDeletePoints(List<PointPojo> points)  {
         pointApi.deleteAllPoints(points);
     }
 
     @Transactional
-    public void addReport(Long deviceId, ReportPojo report) throws ApiException {
+    public void addReport(Long deviceId, ReportPojo ReportPojo) throws ApiException {
         DevicePojo device = getCheckById(deviceId);
-        device.getReports().add(report);
+        device.getReports().add(ReportPojo);
     }
 
     @Transactional
-    public void updateReport(Long deviceId, ReportPojo report, String awsS3Url) throws ApiException {
+    public void updateReport(Long deviceId, ReportPojo ReportPojo, String awsS3Url) throws ApiException {
         DevicePojo device = getCheckById(deviceId);
         List<ReportPojo> list = device.getReports();
-        list.stream().forEach(x-> {
-            if(x.getReportId().equals(report.getReportId()))
+        list.forEach(x-> {
+            if(x.getReportId().equals(ReportPojo.getReportId()))
                 x.setUrl(awsS3Url);
         });
         device.setReports(list);
     }
 
     @Transactional
-    public void updateDevice(Long deviceId, PointPojo point) throws ApiException {
+    public void updateDevice(Long deviceId, PointPojo PointPojo) throws ApiException {
         DevicePojo device = getCheckById(deviceId);
-        device.getPoints().add(point);
+        device.getPoints().add(PointPojo);
     }
 }

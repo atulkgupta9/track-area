@@ -1,7 +1,7 @@
 package com.apogee.trackarea.config;
 
-import com.apogee.trackarea.dtoapi.api.UserApi;
 import com.apogee.trackarea.db.pojo.UserPojo;
+import com.apogee.trackarea.dtoapi.api.UserApi;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,7 +29,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtTokenProvider tokenProvider;
 
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         try{
@@ -42,22 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-//
-//            Cookie[] cookies = req.getCookies();
-//            if(cookies != null){
-//                for(Cookie cookie : cookies){
-//                    if(cookie.getName().equals("Bearer")){
-//                        String x = cookie.getValue();
-//                        if(tokenProvider.validateToken(x)){
-//                            String username = tokenProvider.getUsernameFromJWT(x);
-//                            UserPojo userDetails = api.loadUserByUsername(username);
-//                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-//                            SecurityContextHolder.getContext().setAuthentication(authentication);
-//                        }
-//                    }
-//                }
-//            }
 
         }catch (Exception e){
             log.error("Could not set authentication in security Context", e);

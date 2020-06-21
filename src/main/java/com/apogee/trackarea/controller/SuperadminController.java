@@ -26,7 +26,7 @@ public class SuperadminController {
 
     //get all admins
     @GetMapping("admins")
-    public AdminDetailsData getAllAdmins(){
+    public AdminDetailsData getAllAdmins() {
         return userDto.getAllAdmins();
     }
 
@@ -39,11 +39,6 @@ public class SuperadminController {
     public SingleUserDetails createAdmin(@Valid @RequestBody AdminForm adminForm) throws ApiException {
         return loginDto.createAdmin(adminForm);
     }
-    //update admins
-//    @PutMapping("admin/{adminId}")
-//    public void updateAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateForm form) throws ApiException {
-//        userDto.updateAdminDetails(id,form);
-//    }
 
 
 }

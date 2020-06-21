@@ -10,15 +10,15 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "report_table")
+@Table(name = "reports")
 public class ReportPojo extends AbstractVersionedPojo{
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long reportId;
 
-    private String startGeoCordinate;
+    private String startGeoCoordinate;
 
-    private String endGeoCordinate;
+    private String endGeoCoordinate;
 
     private LocalDateTime startTime;
 
@@ -31,10 +31,5 @@ public class ReportPojo extends AbstractVersionedPojo{
     private Integer actualPointsCaptured;
 
     private Integer areaPointsCaptured;
-
-//    @JsonIgnore
-//    @ManyToOne
-//    @JoinColumn(name = "device")
-//    private DevicePojo device;
 
 }

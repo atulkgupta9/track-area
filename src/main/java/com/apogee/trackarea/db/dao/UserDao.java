@@ -20,7 +20,7 @@ public interface UserDao extends JpaRepository<UserPojo, Long> {
     String getCountOfUsersByType = "select count(p) from UserPojo p where p.userType = :userType";
 
     @Query(getCountOfUsersByType)
-    public long getCountByType(@Param("userType") UserType userType);
+    long getCountByType(@Param("userType") UserType userType);
 
     UserPojo findByPhone(String phone);
 

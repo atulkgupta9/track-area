@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "device_table")
+@Table(name = "devices")
 public class DevicePojo extends AbstractVersionedPojo {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -24,7 +24,6 @@ public class DevicePojo extends AbstractVersionedPojo {
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//        @JoinColumn(name = "device", referencedColumnName = "deviceId")
     @Fetch(FetchMode.SELECT)
     @JoinColumn(name="device_id")
     private List<PointPojo> points = new ArrayList<>();

@@ -4,13 +4,11 @@ import com.apogee.trackarea.controller.LoginController;
 import com.apogee.trackarea.db.pojo.*;
 import com.apogee.trackarea.dtoapi.api.DeviceApi;
 import com.apogee.trackarea.dtoapi.api.PdfApi;
-import com.apogee.trackarea.dtoapi.api.PointApi;
 import com.apogee.trackarea.dtoapi.api.UserApi;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.apogee.trackarea.exceptions.ApiStatus;
 import com.apogee.trackarea.helpers.algo.ComputePolygonArea;
 import com.apogee.trackarea.helpers.algo.ConvexHull;
-import com.apogee.trackarea.helpers.algo.Point;
 import com.apogee.trackarea.helpers.util.GeoConvert;
 import com.apogee.trackarea.helpers.util.Helper;
 import com.apogee.trackarea.helpers.util.SecurityUtil;
@@ -26,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,9 +41,6 @@ public class DeviceDto {
     //in real time it is 900 seconds
     public final Double ACCEPTABLE = 120.0;
 
-
-    @Autowired
-    private PointApi pointApi;
 
     @Autowired
     private DeviceApi deviceApi;
@@ -128,13 +124,13 @@ public class DeviceDto {
     public void addGpggaPoint(String gpgga) throws ApiException {
         login();
         DevicePojo device = SecurityUtil.currentUser().getDevices().get(0);
-        PointPojo point = validateAndPreprocessGpggaString(device.getDeviceId(), gpgga);
+        PointPojo point = validateAndPreprocessGpggaString(gpgga);
         deviceApi.updateDevice(device.getDeviceId(), point);
     }
 
-    private void login(){
+    private void login() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication && !("anonymousUser").equals(authentication.getName())){
+        if (null != authentication && !("anonymousUser").equals(authentication.getName())) {
             return;
         }
 
@@ -144,14 +140,14 @@ public class DeviceDto {
         loginController.loginUser(loginForm);
     }
 
-    private PointPojo validateAndPreprocessGpggaString(Long deviceId, String gpgga) throws ApiException {
+    private PointPojo validateAndPreprocessGpggaString(String gpgga) throws ApiException {
         try {
             //gpgga = "$GPGGA,142202.00,2232.7794629,N,07255.6007712,E,4,25,0.5,54.7268,M,-57.702,M,01,0001*4D";
 
             //22.52 N -> latitude
             //72.92 E -> longitude
 
-            String split[] = gpgga.split(",");
+            String[] split = gpgga.split(",");
             double lat = Double.parseDouble(split[2]); //22.32N
             double lon = Double.parseDouble(split[4]); //72.55E
             lat = convertToDegrees(lat);
@@ -165,7 +161,6 @@ public class DeviceDto {
             point.setUtmEasting(ans[0]);
             point.setUtmNorthing(ans[1]);
             point.setGpgga(gpgga);
-//            point.setDevice(deviceApi.getById(deviceId));
             return point;
         } catch (Exception e) {
             log.info("Error occured while validating and transforming GPGGA String : ", e);
@@ -183,7 +178,7 @@ public class DeviceDto {
     }
 
     private boolean checkIfValidDevice(Long deviceId) {
-        List<Long> devices = SecurityUtil.currentUser().getDevices().stream().map(x -> x.getDeviceId()).collect(Collectors.toList());
+        List<Long> devices = SecurityUtil.currentUser().getDevices().stream().map(DevicePojo::getDeviceId).collect(Collectors.toList());
         return devices.contains(deviceId);
     }
 
@@ -191,8 +186,8 @@ public class DeviceDto {
         return deviceApi.getById(deviceId).getReports();
     }
 
-    private boolean lastPointIsActive(PointPojo pointPojo) {
-        return (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) - pointPojo.getCreatedAt().toEpochSecond(ZoneOffset.UTC)) <= ACCEPTABLE;
+    private boolean lastPointIsActive(PointPojo point) {
+        return (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) - point.getCreatedAt().toEpochSecond(ZoneOffset.UTC)) <= ACCEPTABLE;
     }
 
     private List<PointPojo> getSortedPoints(List<PointPojo> points) {
@@ -231,7 +226,6 @@ public class DeviceDto {
         log.info("allList :  {} ", objectMapper.writeValueAsString(allList));
 
         List<ReportPojo> reports = new ArrayList<>();
-
         if (!checkForValidList(allList)) {
             return reports;
         }
@@ -244,8 +238,8 @@ public class DeviceDto {
                 continue;
             }
             //make point from pointpojo and get their hull
-            List<Point> tmp = list.stream().map(o -> new Point(o.getUtmNorthing(), o.getUtmEasting())).collect(Collectors.toList());
-            List<Point> hull = ConvexHull.makeHull(tmp);
+            List<com.apogee.trackarea.helpers.algo.Point> tmp = list.stream().map(o -> new com.apogee.trackarea.helpers.algo.Point(o.getUtmNorthing(), o.getUtmEasting())).collect(Collectors.toList());
+            List<com.apogee.trackarea.helpers.algo.Point> hull = ConvexHull.getHull(tmp);
 
             LocalDateTime startTime = LocalDateTime.now();
             //write to awsS3
@@ -256,23 +250,22 @@ public class DeviceDto {
             report.setEndTime(list.get(lsize - 1).getCreatedAt());
             report.setActualPointsCaptured(lsize);
             report.setAreaPointsCaptured(hull.size());
-//            report.setDevice(deviceApi.getById(deviceId));
-            report.setStartGeoCordinate(String.format("%.6f, %.6f", list.get(0).getLat() , list.get(0).getLon()));
-            report.setEndGeoCordinate(list.get(lsize - 1).getLat() + " N, " + list.get(lsize - 1).getLon() + " E");
+            report.setStartGeoCoordinate(String.format("%.6f, %.6f", list.get(0).getLat(), list.get(0).getLon()));
+            report.setEndGeoCoordinate(list.get(lsize - 1).getLat() + " N, " + list.get(lsize - 1).getLon() + " E");
             log.info("Writing file to Aws : {}", startTime);
             deviceApi.addReport(deviceId, report);
-            String awsS3Url = pdfApi.writeFileToAwsS3(deviceApi.getById(deviceId).getDeviceImei(), tmp, hull, report, userProfile);
+            String awsS3Url = pdfApi.writeFileToAwsS3(deviceApi.getById(deviceId).getDeviceImei(), hull, report, userProfile);
             log.info("Time Taken : {}, Pdf Url : {} ", Helper.timeDifference(startTime, LocalDateTime.now()), awsS3Url);
             deviceApi.updateReport(deviceId, report, awsS3Url);
 
-            deviceApi.addReportAndDeletePoints(deviceId, report, list);
+            deviceApi.addReportAndDeletePoints(list);
             reports.add(report);
             log.info("Reports : {} ", objectMapper.writeValueAsString(reports));
         }
         return reports;
     }
 
-    private boolean checkForValidList(List<List<PointPojo>> allList) {
-        return (allList != null && !allList.isEmpty());
+    private boolean checkForValidList(List<List<PointPojo>> list) {
+        return !CollectionUtils.isEmpty(list);
     }
 }

@@ -54,7 +54,6 @@ public class StartUpScript {
 
     @EventListener(ApplicationReadyEvent.class)
     public void createUsers() throws ApiException, IOException {
-        //TODO remove this in real time
         if (!userApi.getAllEntities().isEmpty()) {
             return;
         }
@@ -70,8 +69,8 @@ public class StartUpScript {
             userApi.saveEntity(newUser);
         }
 
-        AdminForm admin1 = Data.getAdminForm( "password", "981949404");
-        AdminForm admin2 = Data.getAdminForm( "password", "439838344");
+        AdminForm admin1 = Data.getAdminForm("password", "981949404");
+        AdminForm admin2 = Data.getAdminForm("password", "439838344");
 
         SingleUserDetails adminDetail1 = superadminController.createAdmin(admin1);
         SingleUserDetails adminDetail2 = superadminController.createAdmin(admin2);
@@ -101,27 +100,5 @@ public class StartUpScript {
         deviceForm2.setDeviceImei("o55");
         userController.addDeviceLoggedInUser(deviceForm1);
         userController.addDeviceLoggedInUser(deviceForm2);
-//        InputStream resource = new ClassPathResource("ggpaString").getInputStream();
-//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
-//            List<String> ggpas = reader.lines().collect(Collectors.toList());
-//            for(String ggpa : ggpas){
-//                userController.addGpggaPoint(ggpa);
-//            }
-//        }
-//        InputStream resource = new ClassPathResource("ggpaString").getInputStream();
-//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
-//            List<String> ggpas = reader.lines().collect(Collectors.toList());
-//            LocalDateTime startingTime = LocalDateTime.now().minusSeconds(30);
-//            for(int i=0; i<10; i++){
-//                userController.addGpggaPoint(ggpas.get(i), startingTime.plusSeconds(i));
-//            }
-//
-//            for(int i=10; i<20; i++){
-//                userController.addGpggaPoint(ggpas.get(i),startingTime.plusSeconds(i+15));
-//            }
-//        } catch (ApiException e) {
-//            throw e;
-//        }
-
     }
 }

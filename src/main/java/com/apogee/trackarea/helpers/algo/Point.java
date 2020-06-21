@@ -24,7 +24,7 @@ public class Point implements Comparable<Point> {
         if (!(obj instanceof Point))
             return false;
         else {
-            Point other = (Point)obj;
+            Point other = (Point) obj;
             return x == other.x && y == other.y;
         }
     }

@@ -31,15 +31,14 @@ public class PdfApi {
     private String accessKey;
     @Value("${secret}")
     private String secretKey;
+    @Value("${bucket.name}")
+    private String bucketName;
 
     @Autowired
     private ScatterChartApi scatterChartApi;
 
-    String bucketName = "jar-storage-easy";
-
-
     //Writes File to Aws and returnsUrl
-    public String writeFileToAwsS3(String deviceNo, java.util.List<Point>actual, java.util.List<Point> points, ReportPojo report, UserProfilePojo profile) throws IOException, DocumentException {
+    public String writeFileToAwsS3(String deviceNo, java.util.List<Point> points, ReportPojo report, UserProfilePojo profile) throws IOException, DocumentException {
         AWSCredentials awsCredentials = new AWSCredentials() {
             @Override
             public String getAWSAccessKeyId() {
@@ -52,7 +51,7 @@ public class PdfApi {
             }
         };
         AmazonS3Client s3 = new AmazonS3Client(awsCredentials);
-        String key = UUID.randomUUID().toString().substring(0,8);
+        String key = UUID.randomUUID().toString().substring(0, 8);
         File file = File.createTempFile("temporary", ".pdf");
         file.deleteOnExit();
 
@@ -63,8 +62,8 @@ public class PdfApi {
         Image header = Image.getInstance("https://www.mpdage.org/LatestContent/img/img-mp-logo-en.gif");
         header.scaleToFit(500, 400);
         document.add(header);
-        document.add( Chunk.NEWLINE );
-        document.add( Chunk.NEWLINE );
+        document.add(Chunk.NEWLINE);
+        document.add(Chunk.NEWLINE);
         Map<String, String> tableCells = new LinkedHashMap<>();
         PdfPTable table = new PdfPTable(2);
         table.setSpacingBefore(30);
@@ -74,7 +73,7 @@ public class PdfApi {
         tableCells.put("Date : ", LocalDateTime.now().toString());
         tableCells.put("Device No. :", deviceNo);
         tableCells.put("Name : ", profile.getName());
-        tableCells.put("Location :", report.getStartGeoCordinate());
+        tableCells.put("Location :", report.getStartGeoCoordinate());
         tableCells.put("Estimated Area : ", String.format("%.3f sqm", report.getCalculatedArea()));
 
         for (String get : tableCells.keySet()) {
@@ -87,22 +86,13 @@ public class PdfApi {
             table.addCell(cellOne);
             table.addCell(cellTwo);
         }
-//        XYChart actual_points = scatterChartApi.getChart(actual,"actual points", "Points covered by device");
-        XYChart polygon_points = scatterChartApi.getChart(points,"area points", "Points used for area calculation");
+        XYChart polygon_points = scatterChartApi.getChart(points, "area points", "Points used for area calculation");
 
-//        File imgFile = File.createTempFile("ramadhir", ".jpg");
-//        imgFile.deleteOnExit();
-//        BitmapEncoder.saveBitmap(actual_points, imgFile.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
-
-        File imgFile2 = File.createTempFile("ramadhir2", ".jpg");
+        File imgFile2 = File.createTempFile("tmp", ".jpg");
         imgFile2.deleteOnExit();
         BitmapEncoder.saveBitmap(polygon_points, imgFile2.getAbsolutePath(), BitmapEncoder.BitmapFormat.JPG);
-
-//       VectorGraphicsEncoder.saveVectorGraphic(lon, imgFile.getAbsolutePath(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
-//        Image image = Image.getInstance(imgFile.getAbsolutePath());
         Image image2 = Image.getInstance(imgFile2.getAbsolutePath());
         document.add(table);
-//        document.add(image);
         document.add(image2);
         document.close();
         writer.close();
@@ -110,26 +100,4 @@ public class PdfApi {
         return s3.getResourceUrl(bucketName, key);
     }
 
-
-    public Document generatePdfReportFile() throws IOException, DocumentException {
-        Document document = new Document();
-        document.open();
-        PdfPTable table = new PdfPTable(2);
-        PdfPCell cellOne = new PdfPCell(new Phrase("Report No."));
-        PdfPCell cellTwo = new PdfPCell(new Phrase("123444"));
-
-        cellOne.setBorder(Rectangle.NO_BORDER);
-        cellOne.setBackgroundColor(BaseColor.BLACK);
-
-        cellTwo.setBorder(Rectangle.BOX);
-
-        table.addCell(cellOne);
-        table.addCell(cellTwo);
-        table.addCell(new PdfPCell(new Phrase("Date:")));
-        table.addCell(new PdfPCell(new Phrase(LocalDateTime.now().toString())));
-
-        document.add(table);
-        document.close();
-        return document;
-    }
 }

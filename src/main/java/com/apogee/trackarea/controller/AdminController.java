@@ -1,7 +1,6 @@
 package com.apogee.trackarea.controller;
 
 
-import com.apogee.trackarea.db.pojo.UserPojo;
 import com.apogee.trackarea.dtoapi.dto.LoginDto;
 import com.apogee.trackarea.dtoapi.dto.UserDto;
 import com.apogee.trackarea.exceptions.ApiException;
@@ -30,7 +29,7 @@ public class AdminController {
 
     @PutMapping("user/{id}")
     public void updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateForm form) throws ApiException {
-        userDto.updateUserDetails(id,form);
+        userDto.updateUserDetails(id, form);
     }
 
 
@@ -40,25 +39,17 @@ public class AdminController {
     }
 
     @GetMapping("users")
-    public UserDetailsData getUserDetailsData(){
+    public UserDetailsData getUserDetailsData() {
         return userDto.getAllUsers();
     }
 
     @GetMapping("user/{id}")
     public SingleUserDetailsStatistics getUserData(@PathVariable Long id) throws ApiException {
-        SingleUserDetailsStatistics data = new SingleUserDetailsStatistics();
-        UserPojo user = userDto.getUserById(id);
-        SingleUserDetailsStatistics.Statistics st = new SingleUserDetailsStatistics.Statistics();
-        st.setDeviceCount(user.getDevices().size());
-        int ans = user.getDevices().stream().mapToInt(x->x.getReports().size()).sum();
-        st.setProjectCount(ans);
-        data.setStatistics(st);
-        data.setUser(user);
-        return data;
+        return userDto.getSingleUserDetailsStatistics(id);
     }
 
     @PostMapping("user/search")
-    public UserDetailsData searchUserByForm(@Valid @RequestBody  UserSearchForm form) throws ApiException {
+    public UserDetailsData searchUserByForm(@Valid @RequestBody UserSearchForm form) throws ApiException {
         return userDto.searchUserByForm(form);
     }
 }

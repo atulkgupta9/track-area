@@ -13,5 +13,5 @@ public interface PointDao extends JpaRepository<PointPojo, Long> {
     String pointsQuery = "select p from PointPojo p where p.createdAt >= :starting and p.createdAt <= :ending order by p.createdAt";
 
     @Query(pointsQuery)
-    List<PointPojo> getPointsForDate(@Param("starting") LocalDateTime starting,@Param("ending") LocalDateTime ending);
+    List<PointPojo> getPointsForDate(@Param("starting") LocalDateTime starting, @Param("ending") LocalDateTime ending);
 }

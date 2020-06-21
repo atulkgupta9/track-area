@@ -40,12 +40,12 @@ public class LoginDto {
     private JwtTokenProvider tokenProvider;
 
 
-    public JwtAuthenticationResponse loginUser(LoginForm form){
+    public JwtAuthenticationResponse loginUser(LoginForm form) {
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                form.getUsername(),
-                form.getPassword()
-            )
+                new UsernamePasswordAuthenticationToken(
+                        form.getUsername(),
+                        form.getPassword()
+                )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
@@ -59,7 +59,6 @@ public class LoginDto {
         newUser.setAuthorities(Authorities.USER);
         UserProfilePojo userProfile = new UserProfilePojo();
         BeanUtils.copyProperties(form.getUserProfile(), userProfile);
-//        userProfile.setUser(newUser);
         newUser.setUserProfile(userProfile);
         newUser.setPwdplain(form.getPassword());
         newUser.setUserType(UserType.USER);

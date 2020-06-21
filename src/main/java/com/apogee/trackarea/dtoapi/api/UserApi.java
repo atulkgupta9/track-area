@@ -36,7 +36,7 @@ public class UserApi extends AbstractApi<UserPojo, Long, UserDao> implements Use
     @Transactional(readOnly = true)
     public boolean checkPhoneAvailability(String phone){
         UserPojo user =  dao.findByPhone(phone);
-        return user==null ? true : false;
+        return user == null;
     }
 
     @Override

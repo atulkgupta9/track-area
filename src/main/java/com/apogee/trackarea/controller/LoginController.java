@@ -2,7 +2,6 @@ package com.apogee.trackarea.controller;
 
 
 import com.apogee.trackarea.db.pojo.PointPojo;
-import com.apogee.trackarea.dtoapi.api.PointApi;
 import com.apogee.trackarea.dtoapi.dto.DeviceDto;
 import com.apogee.trackarea.dtoapi.dto.LoginDto;
 import com.apogee.trackarea.exceptions.ApiException;
@@ -36,21 +35,11 @@ public class LoginController {
     private LoginDto loginDto;
 
     @Autowired
-    private PointApi pointApi;
-
-    @Autowired
     private DeviceDto deviceDto;
 
     @PostMapping("signin")
     public JwtAuthenticationResponse loginUser(@Valid @RequestBody LoginForm form, HttpServletRequest request, HttpServletResponse response) {
         JwtAuthenticationResponse res = loginDto.loginUser(form);
-//        Cookie cookie = new Cookie("Bearer", res.getAccessToken());
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(request.isSecure());
-//        cookie.setPath("/");
-//        //100 days
-//        cookie.setMaxAge(60*60*24 * 100);
-//        response.addCookie(cookie);
         SingleUserDetails data = new SingleUserDetails();
         data.setUsername(SecurityUtil.currentUser().getUsername());
         data.setUserType(SecurityUtil.userType());
@@ -58,50 +47,37 @@ public class LoginController {
         return res;
     }
 
-    public void loginUser(LoginForm loginForm){
+    public void loginUser(LoginForm loginForm) {
         loginDto.loginUser(loginForm);
     }
 
-
-
     @PostMapping("add-points")
-    public HullAreaData addPoints(@RequestBody PointsForm form){
+    public HullAreaData addPoints(@RequestBody PointsForm form) {
         List<PointsForm.PointForm> points = form.getPoints();
         List<Point> newList = new ArrayList<>();
 
-        for(PointsForm.PointForm point : points){
+        for (PointsForm.PointForm point : points) {
             try {
                 PointPojo z = new PointPojo();
                 z.setLat(point.getX());
                 z.setLon(point.getY());
                 Point ptr = new Point(point.getX(), point.getY());
                 newList.add(ptr);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
         }
         HullAreaData ans = new HullAreaData();
-        List<Point> hullPoints = ConvexHull.makeHull(newList);
+        List<Point> hullPoints = ConvexHull.getHull(newList);
         ans.setPolygon(hullPoints);
         ans.setArea(ComputePolygonArea.computeArea(hullPoints));
         return ans;
     }
 
 
-
-
     @PostMapping("test")
     public void testStringAdd(@RequestBody String message) throws ApiException {
-//        message = "$GPGGA,142202.00,2232.7794629,N,07255.6007712,E,4,25,0.5,54.7268,M,-57.702,M,01,0001*4D";
-//        String split[] = message.split(",");
-//        double x = Double.parseDouble(split[4]); //72.55E
-//        double y = Double.parseDouble(split[2]); //22.32N
-//
-//        PointPojo point = new PointPojo();
-//        point.setLat(x);
-//        point.setLon(y);
-//
-//        pointApi.saveEntity(point);
+        //message = "$GPGGA,142202.00,2232.7794629,N,07255.6007712,E,4,25,0.5,54.7268,M,-57.702,M,01,0001*4D";
         deviceDto.addGpggaPoint(message);
     }
 

@@ -1,84 +1,68 @@
 package com.apogee.trackarea.helpers.algo;
 
-/*
- * Convex hull algorithm - Library (Java)
- *
- * Copyright (c) 2017 Project Nayuki
- * https://www.nayuki.io/page/convex-hull-algorithm
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program (see COPYING.txt and COPYING.LESSER.txt).
- * If not, see <http://www.gnu.org/licenses/>.
- */
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Input: a list P of points in the plane.
+ * Precondition: There must be at least 3 points.
+ * Sort the points of P by x-coordinate (in case of a tie, sort by y-coordinate).
+ * Initialize U and L as empty lists.
+ * The lists will hold the vertices of upper and lower hulls respectively.
+ * for i = 1, 2, ..., n:
+     * while L contains at least two points and the sequence of last two points
+     * of L and the point P[i] does not make a counter-clockwise turn:
+            *remove the last point from L
+     * append P[i] to L
+ * for i = n, n-1, ..., 1:
+     * while U contains at least two points and the sequence of last two points
+     * of U and the point P[i] does not make a counter-clockwise turn:
+            * remove the last point from U
+     * append P[i] to U
+ * Remove the last point of each list (it's the same as the first point of the other list).
+ * Concatenate L and U to obtain the convex hull of P.
+ * Points in the result will be listed in counter-clockwise order.
+ */
 
-public final class ConvexHull {
+public class ConvexHull {
 
-    // Returns a new list of points representing the convex hull of
-    // the given set of points. The convex hull excludes collinear points.
-    // This algorithm runs in O(n log n) time.
-    public static List<Point> makeHull(List<Point> points) {
-        List<Point> newPoints = new ArrayList<>(points);
-        Collections.sort(newPoints);
-        return makeHullPresorted(newPoints);
-    }
-
-
-    // Returns the convex hull, assuming that each points[i] <= points[i + 1]. Runs in O(n) time.
-    public static List<Point> makeHullPresorted(List<Point> points) {
-        if (points.size() <= 1)
-            return new ArrayList<>(points);
-
-        // Andrew's monotone chain algorithm. Positive lon coordinates correspond to "up"
-        // as per the mathematical convention, instead of "down" as per the computer
-        // graphics convention. This doesn't affect the correctness of the result.
-
-        List<Point> upperHull = new ArrayList<>();
-        for (Point p : points) {
-            while (upperHull.size() >= 2) {
-                Point q = upperHull.get(upperHull.size() - 1);
-                Point r = upperHull.get(upperHull.size() - 2);
-                if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x))
-                    upperHull.remove(upperHull.size() - 1);
-                else
-                    break;
-            }
-            upperHull.add(p);
+    public static List<Point> getHull(List<Point> points) {
+        if (CollectionUtils.isEmpty(points) || points.size() <= 1) {
+            return points;
         }
-        upperHull.remove(upperHull.size() - 1);
+        Collections.sort(points);
+        List<Point> upper = new ArrayList<>();
+        List<Point> lower = new ArrayList<>();
+        for (Point point : points) {
+            iteratePoints(lower, point);
+        }
 
-        List<Point> lowerHull = new ArrayList<>();
         for (int i = points.size() - 1; i >= 0; i--) {
-            Point p = points.get(i);
-            while (lowerHull.size() >= 2) {
-                Point q = lowerHull.get(lowerHull.size() - 1);
-                Point r = lowerHull.get(lowerHull.size() - 2);
-                if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x))
-                    lowerHull.remove(lowerHull.size() - 1);
-                else
-                    break;
-            }
-            lowerHull.add(p);
-        }
-        lowerHull.remove(lowerHull.size() - 1);
+            iteratePoints(upper, points.get(i));
 
-        if (!(upperHull.size() == 1 && upperHull.equals(lowerHull)))
-            upperHull.addAll(lowerHull);
-        return upperHull;
+        }
+        lower.remove(lower.size() - 1);
+        upper.remove(upper.size() - 1);
+
+        if (!(lower.size() == 1 && lower.equals(upper)))
+            lower.addAll(upper);
+        return lower;
+
     }
+
+    private static void iteratePoints(List<Point> list, Point p) {
+        while (list.size() >= 2 && cross(list.get(list.size() - 2), list.get(list.size() - 1), p) <= 0) {
+            list.remove(list.size() - 1);
+        }
+        list.add(p);
+    }
+
+    public static double cross(Point O, Point A, Point B) {
+        return (A.x - O.x) * (B.y - O.y) - (A.y - O.y) * (B.x - O.x);
+    }
+
 
 }

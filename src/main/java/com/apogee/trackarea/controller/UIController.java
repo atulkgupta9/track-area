@@ -1,14 +1,11 @@
 package com.apogee.trackarea.controller;
 
-import com.apogee.trackarea.exceptions.ApiException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class UIController {
-
-
 
     @RequestMapping(value = "/ui/index", method = RequestMethod.GET)
     public String greeting() {
@@ -25,13 +22,13 @@ public class UIController {
         return "dashboard.html";
     }
 
-
     @RequestMapping(value = "/ui/admin/user", method = RequestMethod.GET)
-    public String  adminUser() throws ApiException {
+    public String adminUser() {
         return "user-signup.html";
     }
+
     @RequestMapping(value = "/ui/testdb", method = RequestMethod.GET)
-    public String  testDb() throws ApiException {
+    public String testDb() {
         return "testdb.html";
     }
 

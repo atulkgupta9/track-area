@@ -43,22 +43,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
-//                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and().authorizeRequests()
-//                .antMatchers("/api/user/**").hasAnyAuthority(Authorities.USER.toString())
-//                .antMatchers("/ui/dashboard/","/ui/admin/user").hasAnyAuthority(Authorities.ADMIN.toString(), Authorities.USER.toString())
-//                .and().authorizeRequests().antMatchers("/api/auth/**","/ui/signin", "/css/**", "/js/**").permitAll()
-//                .anyRequest().authenticated();
-//
-//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
                 .antMatchers("/api/admin/**").permitAll()
                 .antMatchers("/api/user/**").permitAll()
-                .antMatchers("/ui/dashboard/","/ui/admin/user").permitAll()
-                .and().authorizeRequests().antMatchers("/api/auth/**","/ui/signin", "/css/**", "/js/**").permitAll()
+                .antMatchers("/ui/dashboard", "/ui/admin/user").permitAll()
+                .and().authorizeRequests().antMatchers("/api/auth/**", "/ui/signin", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -76,8 +67,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(AUTH_WHITELIST);
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

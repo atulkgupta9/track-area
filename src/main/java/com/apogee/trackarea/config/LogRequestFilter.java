@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,14 +38,14 @@ LogRequestFilter extends OncePerRequestFilter implements Ordered {
             throws ServletException, IOException {
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
 
-        int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+        int status;
 
         // pass through filter chain to do the actual request handling
         filterChain.doFilter(wrappedRequest, response);
         status = response.getStatus();
 
         // only log request if there was an error
-        if ((status == HttpStatus.INTERNAL_SERVER_ERROR.value()) || (status == HttpStatus.BAD_REQUEST.value()) || status==HttpStatus.UNAUTHORIZED.value() || status==HttpStatus.FORBIDDEN.value() ){
+        if ((status == HttpStatus.INTERNAL_SERVER_ERROR.value()) || (status == HttpStatus.BAD_REQUEST.value()) || status == HttpStatus.UNAUTHORIZED.value() || status == HttpStatus.FORBIDDEN.value()) {
             Map<String, Object> trace = getTrace(wrappedRequest, status);
 
             // body can only be read after the actual request handling was done!
@@ -65,8 +64,7 @@ LogRequestFilter extends OncePerRequestFilter implements Ordered {
                 String payload;
                 try {
                     payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
-                }
-                catch (UnsupportedEncodingException ex) {
+                } catch (UnsupportedEncodingException ex) {
                     payload = "[unknown]";
                 }
 
@@ -86,10 +84,7 @@ LogRequestFilter extends OncePerRequestFilter implements Ordered {
 
     protected Map<String, Object> getTrace(HttpServletRequest request, int status) {
         Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
-
-        Principal principal = request.getUserPrincipal();
-
-        Map<String, Object> trace = new LinkedHashMap<String, Object>();
+        Map<String, Object> trace = new LinkedHashMap<>();
         trace.put("method", request.getMethod());
         trace.put("path", request.getRequestURI());
         trace.put("query", request.getQueryString());

@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "user_profile_table")
+@Table(name = "user_profiles")
 public class UserProfilePojo extends AbstractVersionedPojo{
 
     @Id
@@ -20,9 +20,5 @@ public class UserProfilePojo extends AbstractVersionedPojo{
     private String tractor;
     private String address;
     private String name;
-//    @JsonIgnore
-//    @OneToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "user")
-//    private UserPojo user;
 
 }

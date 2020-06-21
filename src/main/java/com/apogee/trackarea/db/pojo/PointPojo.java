@@ -1,13 +1,15 @@
 package com.apogee.trackarea.db.pojo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name="point_table")
+@Table(name="points")
 public class PointPojo extends AbstractVersionedPojo{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,9 +27,5 @@ public class PointPojo extends AbstractVersionedPojo{
 
     @Type(type = "text")
     private String gpgga;
-//
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "device")
-//    private DevicePojo device;
+
 }

@@ -1,6 +1,5 @@
 package com.apogee.trackarea.config;
 
-import com.apogee.trackarea.dtoapi.api.UserApi;
 import com.apogee.trackarea.dtoapi.dto.DeviceDto;
 import com.apogee.trackarea.exceptions.ApiException;
 import com.itextpdf.text.DocumentException;
@@ -18,15 +17,15 @@ import java.io.IOException;
 @Slf4j
 public class SchedulerConfig {
 
-
-    @Autowired
-    private UserApi userApi;
-
     @Autowired
     private DeviceDto deviceDto;
 
     @Scheduled(fixedDelay = 20000)
-    public void generateReports() throws ApiException, IOException, DocumentException {
-        deviceDto.runJob();
+    public void generateReports() {
+        try {
+            deviceDto.runJob();
+        } catch (ApiException | IOException | DocumentException e) {
+            log.error("Exception occurred in running job ", e);
+        }
     }
 }

@@ -24,7 +24,7 @@ public class ValidationHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.setMessage(ex.getMessage() + " : " + fieldErrors.get(0).toString()) ;
+        errorResponse.setMessage(ex.getMessage() + " : " + fieldErrors.get(0).toString());
         errorResponse.setPath(request.getContextPath());
 
         return errorResponse;

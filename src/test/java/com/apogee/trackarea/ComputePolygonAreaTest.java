@@ -10,19 +10,19 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class ComputePolygonAreaTest{
+public class ComputePolygonAreaTest extends TrackAreaApplicationTests {
     @Test
-    public void testAreaOfRectangle(){
+    public void testAreaOfRectangle() {
         List<Point> points = Arrays.asList(new Point(-3, 2), new Point(1, 2), new Point(1, -4), new Point(-3, -4));
-        List<Point> actual = ConvexHull.makeHull(points);
+        List<Point> actual = ConvexHull.getHull(points);
         double ans = ComputePolygonArea.computeArea(actual);
         assertEquals(24, ans, 0.0);
     }
 
     @Test
-    public void testAreaOfTriangle(){
-        List<Point> points = Arrays.asList(new Point(-3, 2), new Point(1, 2), new Point(0,0));
-        List<Point> actual = ConvexHull.makeHull(points);
+    public void testAreaOfTriangle() {
+        List<Point> points = Arrays.asList(new Point(-3, 2), new Point(1, 2), new Point(0, 0));
+        List<Point> actual = ConvexHull.getHull(points);
         double ans = ComputePolygonArea.computeArea(actual);
         assertEquals(4, ans, 0.0);
     }

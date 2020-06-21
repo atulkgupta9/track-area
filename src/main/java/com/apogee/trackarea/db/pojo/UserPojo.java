@@ -11,19 +11,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "user_table")
+@Table(name = "users")
 public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     @NotNull
@@ -41,14 +38,14 @@ public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
     private String pwdplain;
 
     @JsonIgnore
-    private boolean isActive=true;
+    private boolean isActive = true;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Authorities authorities;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="user_profile")
+    @JoinColumn(name = "user_profile")
     private UserProfilePojo userProfile;
 
     @Enumerated(EnumType.STRING)
@@ -57,15 +54,14 @@ public class UserPojo extends AbstractVersionedPojo implements UserDetails  {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-//    @JoinColumn(name = "user", referencedColumnName = "userId")
     private List<DevicePojo> devices = new ArrayList<>();
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        //        return authorities.stream().map(lat->new SimpleGrantedAuthority(lat)).collect(Collectors.toList());
-        return Arrays.asList(new SimpleGrantedAuthority(this.authorities.toString()));
+        return Collections.singleton(new SimpleGrantedAuthority(this.authorities.toString()));
     }
+
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {

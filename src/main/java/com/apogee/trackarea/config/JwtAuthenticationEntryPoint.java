@@ -17,13 +17,9 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 
-//    @Autowired
-//    private HandlerExceptionResolver resolver;
-
-    @Override
+   @Override
     public void commence(HttpServletRequest req, HttpServletResponse res, AuthenticationException e) throws IOException, ServletException {
         if(e.getClass().equals(LockedException.class)){
-//            resolver.resolveException(req, res, new JwtAuthenticationResponse("zingla"), e);
             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Please verify your email");
             return;
         }
