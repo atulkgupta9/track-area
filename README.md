@@ -1,5 +1,5 @@
 # Track-Area
-This project was used as a Proof of Concept to one of the government project. 
+This project was used as a Proof of Concept for one of the government project. 
 
 ## Problem Statement
 To compute area traversed by a tractor while ploughing a field as precisely as possible. A sensor is mounted on a tractor while it is ploughing a field.
