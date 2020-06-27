@@ -26,3 +26,7 @@ Now that we have the points that were traversed we need to calculate the area th
 
 So to calculate the area, it is easier to have a regular geometry from these arbitrary set of points. So we create a convex hull (https://en.wikipedia.org/wiki/Convex_hull) from these set of point.
 After getting the convex hull, we can simply calculate the area of n shaped polygon by using (https://en.wikipedia.org/wiki/Shoelace_formula).
+
+### Sample Report
+![Report](https://github.com/atulkgupta9/track-area/blob/master/src/main/resources/img/report.png)
+![Plot](https://github.com/atulkgupta9/track-area/blob/master/src/main/resources/img/plot.png)
